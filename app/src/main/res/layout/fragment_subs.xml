@@ -10,14 +10,6 @@
     android:orientation="vertical"
     tools:context=".ui.subscriptions.SubscriptionsFragment">
 
-    <TextView
-        android:id="@+id/subsText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="Subscriptions"
-        android:textSize="18sp" />
-
     <ScrollView
         android:id="@+id/homeSubsScroll"
         android:layout_width="match_parent"
