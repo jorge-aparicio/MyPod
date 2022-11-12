@@ -1,17 +1,24 @@
 package com.cs371m.mypod
 
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.cs371m.mypod.api.PodcastSearchQuery
 import com.cs371m.mypod.databinding.ActivityMainBinding
+import com.cs371m.mypod.ui.MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    // API TEST
+    private val viewModel: MainViewModel by viewModels();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,5 +37,11 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        // API TEST
+        Log.d("##########################", "BEGIN")
+        viewModel.searchPodcasts("crime", 5);
+        Log.d("##########################", "FIN")
+
     }
 }

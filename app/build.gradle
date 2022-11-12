@@ -1,6 +1,8 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    // GraphQL
+    id("com.apollographql.apollo3").version("3.7.0")
 }
 
 android {
@@ -9,12 +11,17 @@ android {
 
     defaultConfig {
         applicationId "com.cs371m.mypod"
-        minSdk 32
+        minSdk 31
         targetSdk 32
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    apollo {
+        generateKotlinModels.set(true)
+        packageName.set("com.cs371m.mypod.api")
     }
 
     buildTypes {
@@ -45,6 +52,9 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    // GraphQL
+    implementation("com.apollographql.apollo3:apollo-runtime:3.7.0")
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'

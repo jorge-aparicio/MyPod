@@ -1,0 +1,9 @@
+query PodcastSearch($numResults: Int!, $term: String!) {
+    podcasts(first: $numResults, searchTerm: $term) {
+        data {
+            applePodcastsId
+            title
+            imageUrl
+        }
+    }
+}

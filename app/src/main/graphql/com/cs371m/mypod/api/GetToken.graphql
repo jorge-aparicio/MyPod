@@ -1,0 +1,13 @@
+mutation GetToken{
+    requestAccessToken(
+        input: {
+            grant_type: CLIENT_CREDENTIALS
+            client_id: "97b8e345-fc1d-49c2-8c57-8a0863d222f5"
+            client_secret: "ZxcSscGD8tr83ovlS6GSCNNhQDCH9vzdfcRGE31r"
+        }
+    ) {
+        access_token
+        token_type
+        expires_in
+    }
+}
