@@ -4,6 +4,7 @@ query Podcast($id: String!) {
         title
         imageUrl
         ratingAverage
+        description
         }
 }
 

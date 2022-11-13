@@ -62,10 +62,12 @@ class SearchFragment : Fragment() {
         })
 
 
+
         // Display podcasts
         viewModel.observeSearchResults().observe(viewLifecycleOwner) {
             adapter.submitList(it);
         }
+
 
     }
 

@@ -17,6 +17,11 @@ class MainViewModel : ViewModel() {
     private val podcastsList = MutableLiveData<List<String>>();
     private val podcastsDataList = MutableLiveData<List<PodcastQuery.Podcast>>();
 
+    // profile values
+    private val podcastProfile = MutableLiveData<PodcastQuery.Podcast>();
+    private val profileEpisodes = MutableLiveData<List<EpisodesQuery.Data1>>();
+    private val episodesPageInfo = MutableLiveData<EpisodesQuery.PaginatorInfo>();
+
     // Podcast Search using a search term
     fun searchPodcasts(term: String, limit: Int, page: Int) = viewModelScope.launch(
         context = viewModelScope.coroutineContext
@@ -53,10 +58,47 @@ class MainViewModel : ViewModel() {
         if (list.isNotEmpty()) podcastsDataList.postValue(list);
     }
 
+    fun updateProfile(id: String)= viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO) {
+
+        // Get Podcast Data
+        val result = myPodRepo.getPodcast(id);
+
+        // set profile podcast
+        if (result != null) podcastProfile.postValue(result!!)
+
+        val episodesResult = myPodRepo.getEpisodes(id,0);
+        if(episodesResult!=null) {
+            episodesPageInfo.postValue(episodesResult!!.paginatorInfo!!)
+            profileEpisodes.postValue(episodesResult!!.data)}
+
+    }
+
+    fun getMoreEpisodes(id:String) = viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO) {
+        val currentPage = episodesPageInfo.value!!.currentPage
+        if(episodesPageInfo.value!!.hasMorePages) {
+            val episodesResult = myPodRepo.getEpisodes(id, (currentPage+1));
+            if (episodesResult != null) {
+                val list = profileEpisodes.value
+                episodesPageInfo.postValue(episodesResult!!.paginatorInfo!!)
+                profileEpisodes.postValue(episodesResult!!.data)
+            }
+        }
+    }
+
+
     // Observers
     fun observeSearchResults(): LiveData<List<PodcastSearchQuery.Data1>> {return searchResults; }
     fun observePodcastsList(): LiveData<List<String>> {return podcastsList; }
     fun observePodcastsDataList(): LiveData<List<PodcastQuery.Podcast>> {return podcastsDataList; }
+
+
+    // profile observers
+    fun observePodcastProfile():LiveData<PodcastQuery.Podcast>{return podcastProfile}
+    fun observeProfileEpisodes():LiveData<List<EpisodesQuery.Data1>>{return profileEpisodes}
 
     // Helper Getters
     private fun getPodcastsList() : List<String> {
@@ -66,7 +108,7 @@ class MainViewModel : ViewModel() {
 
     private fun getPodcastsDataList() : List<PodcastQuery.Podcast> {
         if (podcastsDataList.value != null) return podcastsDataList.value!!;
-        else return List<PodcastQuery.Podcast>(0) {PodcastQuery.Podcast("", "", "",null)};
+        else return List<PodcastQuery.Podcast>(0) {PodcastQuery.Podcast("", "", "",null,"")};
     }
 
     // Setters

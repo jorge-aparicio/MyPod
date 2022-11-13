@@ -1,11 +1,5 @@
-query Profile($id: String!,$pageNum: Int!) {
+query Episodes($id: String!,$pageNum: Int!) {
     podcast(identifier: {id: $id, type: APPLE_PODCASTS}) {
-        id
-        title
-        imageUrl
-        sanitizedDescription
-        rssUrl
-        ratingAverage
         episodes(first: 10,page: $pageNum,sort: {sortBy: AIR_DATE, direction: DESCENDING},paginationType: PAGE){
         paginatorInfo {
             currentPage,
@@ -17,6 +11,8 @@ query Profile($id: String!,$pageNum: Int!) {
         title
         imageUrl
         description
+        airDate
+        length
         audioUrl}
         }
     }

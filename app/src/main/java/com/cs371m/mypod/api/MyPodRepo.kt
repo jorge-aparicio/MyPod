@@ -21,11 +21,11 @@ class MyPodRepo(private val podchaserAPI: ApolloClient) {
         else return null;
     }
 
-    // Get profile details
-    suspend fun getProfile(id: String, page:Int): ProfileQuery.Podcast? {
-        val results = podchaserAPI.query(ProfileQuery(id,page)).execute().data;
+
+    suspend fun getEpisodes(id: String, page: Int):EpisodesQuery.Episodes?{
+        val results = podchaserAPI.query(EpisodesQuery(id,page)).execute().data;
         if (results != null) {
-            return results.podcast!!
+            return results.podcast!!.episodes!!
         };
         else return null;
     }

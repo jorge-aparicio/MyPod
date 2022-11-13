@@ -8,20 +8,20 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.cs371m.mypod.api.ProfileQuery
+import com.cs371m.mypod.api.PodcastQuery
 import com.cs371m.mypod.databinding.PodTileBinding
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
 
 class PodTileAdapter(private val viewModel: MainViewModel)
-    : ListAdapter<ProfileQuery.Podcast, PodTileAdapter.VH>(PodcastDiff()) {
+    : ListAdapter<PodcastQuery.Podcast, PodTileAdapter.VH>(PodcastDiff()) {
 
-    class PodcastDiff : DiffUtil.ItemCallback<ProfileQuery.Podcast>() {
-        override fun areItemsTheSame(oldItem: ProfileQuery.Podcast, newItem: ProfileQuery.Podcast): Boolean {
+    class PodcastDiff : DiffUtil.ItemCallback<PodcastQuery.Podcast>() {
+        override fun areItemsTheSame(oldItem: PodcastQuery.Podcast, newItem: PodcastQuery.Podcast): Boolean {
             return oldItem.id == newItem.id;
         }
 
-        override fun areContentsTheSame(oldItem: ProfileQuery.Podcast, newItem: ProfileQuery.Podcast): Boolean {
+        override fun areContentsTheSame(oldItem: PodcastQuery.Podcast, newItem: PodcastQuery.Podcast): Boolean {
             return oldItem.id == newItem.id;
         }
 
