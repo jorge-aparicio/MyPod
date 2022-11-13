@@ -1,6 +1,7 @@
 query Profile($id: String!) {
     podcast(identifier: {id: $id, type: APPLE_PODCASTS}) {
+        id
         title
-        description
+        imageUrl
     }
 }
