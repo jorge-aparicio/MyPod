@@ -49,11 +49,11 @@ class HomeFragment : Fragment() {
         binding.continueList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
 
         val podList = mutableListOf<String>();
-//        podList.add("998568017");
-//        podList.add("1322200189")
-//        podList.add("949195280")
-//        podList.add("1401698612")
-//        podList.add("1112004494")
+        podList.add("998568017");
+        podList.add("1322200189")
+        podList.add("949195280")
+        podList.add("1401698612")
+        podList.add("1112004494")
         viewModel.setPodcastsList(podList);
 
         // Search for podcast data everytime list is updated

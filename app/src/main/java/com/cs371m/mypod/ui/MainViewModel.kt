@@ -21,10 +21,10 @@ class MainViewModel : ViewModel() {
     private val podcastsDataList = MutableLiveData<List<ProfileQuery.Podcast>>();
 
     // Podcast Search using a search term
-    fun searchPodcasts(term: String, limit: Int) = viewModelScope.launch(
+    fun searchPodcasts(term: String, limit: Int, page: Int) = viewModelScope.launch(
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
-        val result = myPodRepo.podcastSearch(term, limit);
+        val result = myPodRepo.podcastSearch(term, limit,page);
         if (result != null) {
             val list = mutableListOf<PodcastSearchQuery.Data1>();
             for (i in 0..result.data.size - 1) if (result.data[i].applePodcastsId != null) list.add(result.data[i]);
@@ -69,7 +69,7 @@ class MainViewModel : ViewModel() {
 
     private fun getPodcastsDataList() : List<ProfileQuery.Podcast> {
         if (podcastsDataList.value != null) return podcastsDataList.value!!;
-        else return List<ProfileQuery.Podcast>(0) {ProfileQuery.Podcast("", "", "")};
+        else return List<ProfileQuery.Podcast>(0) {ProfileQuery.Podcast("", "", "",null,null,null,null)};
     }
 
     // Setters

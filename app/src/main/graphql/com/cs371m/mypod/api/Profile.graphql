@@ -3,5 +3,21 @@ query Profile($id: String!) {
         id
         title
         imageUrl
+        sanitizedDescription
+        rssUrl
+        ratingAverage
+        episodes(first: 10,page: 0,sort: {sortBy: AIR_DATE, direction: DESCENDING},paginationType: PAGE){
+        paginatorInfo {
+            currentPage,
+            hasMorePages,
+            lastPage,
+        },
+        data{
+        id
+        title
+        imageUrl
+        description
+        audioUrl}
+        }
     }
 }

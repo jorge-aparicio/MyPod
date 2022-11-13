@@ -15,9 +15,9 @@ class MyPodRepo(private val podchaserAPI: ApolloClient) {
 //    )
 
     // Search for podcasts
-    suspend fun podcastSearch(searchTerm: String, limit: Int): PodcastSearchQuery.Podcasts? {
-        Log.d("#########################", "${podchaserAPI.query(PodcastSearchQuery(limit, searchTerm)).execute().data!!.podcasts}")
-        val results = podchaserAPI.query(PodcastSearchQuery(limit, searchTerm)).execute().data;
+    suspend fun podcastSearch(searchTerm: String, limit: Int, page: Int): PodcastSearchQuery.Podcasts? {
+        Log.d("#########################", "${podchaserAPI.query(PodcastSearchQuery(limit, searchTerm,page)).execute().data!!.podcasts}")
+        val results = podchaserAPI.query(PodcastSearchQuery(limit, searchTerm,page)).execute().data;
         if (results != null) return results.podcasts;
         else return null;
     }

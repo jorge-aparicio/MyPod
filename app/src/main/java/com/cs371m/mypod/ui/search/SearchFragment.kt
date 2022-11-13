@@ -45,7 +45,7 @@ class SearchFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
 // do something on text submit
                 if(query!=null) {
-                    viewModel.searchPodcasts(query!!, 10)
+                    viewModel.searchPodcasts(query!!, 20,0)
                     return true
                 }
                 return false
@@ -54,7 +54,7 @@ class SearchFragment : Fragment() {
             override fun onQueryTextChange(newText: String?): Boolean {
 // do something when text changes
                 if(newText!=null && newText!!.length > 2) {
-                    viewModel.searchPodcasts(newText!!, 10)
+                    viewModel.searchPodcasts(newText!!, 20,0)
                     return true
                 }
                 return false

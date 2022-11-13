@@ -1,5 +1,5 @@
-query PodcastSearch($numResults: Int!, $term: String!) {
-    podcasts(first: $numResults, searchTerm: $term) {
+query PodcastSearch($numResults: Int!, $term: String!,$pageNum: Int!) {
+    podcasts(first: $numResults, searchTerm: $term,, sort: {sortBy: RELEVANCE, direction: DESCENDING},page: $pageNum) {
         data {
             applePodcastsId
             title
