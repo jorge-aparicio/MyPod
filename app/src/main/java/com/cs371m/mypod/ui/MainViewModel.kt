@@ -16,7 +16,7 @@ class MainViewModel : ViewModel() {
 
     private val podchaserApi = PodchaserAPI.create();
     private val myPodRepo = MyPodRepo(podchaserApi);
-    private val searchResults = MutableLiveData<PodcastSearchQuery.Podcasts>();
+    private val searchResults = MutableLiveData<List<PodcastSearchQuery.Data1>>();
     private val podcastsList = MutableLiveData<List<String>>();
     private val podcastsDataList = MutableLiveData<List<ProfileQuery.Podcast>>();
 
@@ -24,7 +24,12 @@ class MainViewModel : ViewModel() {
     fun searchPodcasts(term: String, limit: Int) = viewModelScope.launch(
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
-        searchResults.postValue(myPodRepo.podcastSearch(term, limit))
+        val result = myPodRepo.podcastSearch(term, limit);
+        if (result != null) {
+            val list = mutableListOf<PodcastSearchQuery.Data1>();
+            for (i in 0..result.data.size - 1) if (result.data[i].applePodcastsId != null) list.add(result.data[i]);
+            searchResults.postValue(list)
+        }
     }
 
     // Get podcast data for each id in list
@@ -51,18 +56,12 @@ class MainViewModel : ViewModel() {
         if (list.isNotEmpty()) podcastsDataList.postValue(list);
     }
 
-    fun observeSearchResults(): LiveData<PodcastSearchQuery.Podcasts> {
-        return searchResults;
-    }
+    // Observers
+    fun observeSearchResults(): LiveData<List<PodcastSearchQuery.Data1>> {return searchResults; }
+    fun observePodcastsList(): LiveData<List<String>> {return podcastsList; }
+    fun observePodcastsDataList(): LiveData<List<ProfileQuery.Podcast>> {return podcastsDataList; }
 
-    fun observePodcastsList(): LiveData<List<String>> {
-        return podcastsList;
-    }
-
-    fun observePodcastsDataList(): LiveData<List<ProfileQuery.Podcast>> {
-        return podcastsDataList;
-    }
-
+    // Helper Getters
     private fun getPodcastsList() : List<String> {
         if (podcastsList.value != null) return podcastsList.value!!;
         else return List<String>(0) {""};
@@ -73,6 +72,7 @@ class MainViewModel : ViewModel() {
         else return List<ProfileQuery.Podcast>(0) {ProfileQuery.Podcast("", "", "")};
     }
 
+    // Setters
     fun setPodcastsList(list: List<String>) {
         podcastsList.postValue(list);
     }

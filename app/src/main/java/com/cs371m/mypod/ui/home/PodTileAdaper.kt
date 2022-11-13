@@ -47,7 +47,6 @@ class PodTileAdapter(private val viewModel: MainViewModel)
         podTileBinding.tileTitle.text = podcast.title;
         if (podcast.imageUrl != null)
             Glide.glideFetch(podcast.imageUrl.toString(), podcast.imageUrl.toString(), podTileBinding.tileImage)
-        Log.d("##########################", "${podcast.title}")
 
     }
 
