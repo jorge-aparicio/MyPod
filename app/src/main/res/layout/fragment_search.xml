@@ -12,8 +12,14 @@
 
     <SearchView
         android:id="@+id/search_bar"
+        style="@android:style/Widget.Material.SearchView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:queryHint="Enter a podcast name or genre here"
+        android:iconifiedByDefault="false"
+        app:iconifiedByDefault="false"
+        android:visibility="visible"
+        tools:visibility="visible" />
 
     <ScrollView
         android:id="@+id/searchSubsScroll"

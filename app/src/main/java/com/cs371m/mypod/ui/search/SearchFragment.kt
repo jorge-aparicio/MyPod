@@ -1,19 +1,15 @@
 package com.cs371m.mypod.ui.search
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.size
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.cs371m.mypod.api.PodcastSearchQuery
 import com.cs371m.mypod.databinding.FragmentSearchBinding
 import com.cs371m.mypod.ui.MainViewModel
-import com.cs371m.mypod.ui.home.PodTileAdapter
 
 class SearchFragment : Fragment() {
 
@@ -31,8 +27,6 @@ class SearchFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val dashboardViewModel =
-            ViewModelProvider(this).get(DashboardViewModel::class.java)
 
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -47,8 +41,26 @@ class SearchFragment : Fragment() {
         val adapter = PodRowAdapter(viewModel);
         binding.searchSubsList.adapter = adapter;
         binding.searchSubsList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+// do something on text submit
+                if(query!=null) {
+                    viewModel.searchPodcasts(query!!, 10)
+                    return true
+                }
+                return false
+            }
 
-        viewModel.searchPodcasts("crime", 10)
+            override fun onQueryTextChange(newText: String?): Boolean {
+// do something when text changes
+                if(newText!=null && newText!!.length > 2) {
+                    viewModel.searchPodcasts(newText!!, 10)
+                    return true
+                }
+                return false
+            }
+        })
+
 
         // Display podcasts
         viewModel.observeSearchResults().observe(viewLifecycleOwner) {
