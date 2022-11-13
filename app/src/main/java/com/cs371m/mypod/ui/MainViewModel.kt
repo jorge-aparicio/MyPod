@@ -5,10 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cs371m.mypod.api.MyPodRepo
-import com.cs371m.mypod.api.PodcastSearchQuery
-import com.cs371m.mypod.api.PodchaserAPI
-import com.cs371m.mypod.api.ProfileQuery
+import com.cs371m.mypod.api.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -18,7 +15,7 @@ class MainViewModel : ViewModel() {
     private val myPodRepo = MyPodRepo(podchaserApi);
     private val searchResults = MutableLiveData<List<PodcastSearchQuery.Data1>>();
     private val podcastsList = MutableLiveData<List<String>>();
-    private val podcastsDataList = MutableLiveData<List<ProfileQuery.Podcast>>();
+    private val podcastsDataList = MutableLiveData<List<PodcastQuery.Podcast>>();
 
     // Podcast Search using a search term
     fun searchPodcasts(term: String, limit: Int, page: Int) = viewModelScope.launch(
@@ -46,7 +43,7 @@ class MainViewModel : ViewModel() {
                 + Dispatchers.IO) {
 
         // Get Podcast Data
-        val result = myPodRepo.getProfile(id);
+        val result = myPodRepo.getPodcast(id);
 
         // Append podcast to list
         val list = getPodcastsDataList().toMutableList();
@@ -59,7 +56,7 @@ class MainViewModel : ViewModel() {
     // Observers
     fun observeSearchResults(): LiveData<List<PodcastSearchQuery.Data1>> {return searchResults; }
     fun observePodcastsList(): LiveData<List<String>> {return podcastsList; }
-    fun observePodcastsDataList(): LiveData<List<ProfileQuery.Podcast>> {return podcastsDataList; }
+    fun observePodcastsDataList(): LiveData<List<PodcastQuery.Podcast>> {return podcastsDataList; }
 
     // Helper Getters
     private fun getPodcastsList() : List<String> {
@@ -67,9 +64,9 @@ class MainViewModel : ViewModel() {
         else return List<String>(0) {""};
     }
 
-    private fun getPodcastsDataList() : List<ProfileQuery.Podcast> {
+    private fun getPodcastsDataList() : List<PodcastQuery.Podcast> {
         if (podcastsDataList.value != null) return podcastsDataList.value!!;
-        else return List<ProfileQuery.Podcast>(0) {ProfileQuery.Podcast("", "", "",null,null,null,null)};
+        else return List<PodcastQuery.Podcast>(0) {PodcastQuery.Podcast("", "", "",null)};
     }
 
     // Setters

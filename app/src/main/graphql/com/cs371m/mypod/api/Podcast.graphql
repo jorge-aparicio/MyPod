@@ -1,0 +1,9 @@
+query Podcast($id: String!) {
+    podcast(identifier: {id: $id, type: APPLE_PODCASTS}) {
+        id
+        title
+        imageUrl
+        ratingAverage
+        }
+}
+

@@ -1,4 +1,4 @@
-query Profile($id: String!) {
+query Profile($id: String!,$pageNum: Int!) {
     podcast(identifier: {id: $id, type: APPLE_PODCASTS}) {
         id
         title
@@ -6,7 +6,7 @@ query Profile($id: String!) {
         sanitizedDescription
         rssUrl
         ratingAverage
-        episodes(first: 10,page: 0,sort: {sortBy: AIR_DATE, direction: DESCENDING},paginationType: PAGE){
+        episodes(first: 10,page: $pageNum,sort: {sortBy: AIR_DATE, direction: DESCENDING},paginationType: PAGE){
         paginatorInfo {
             currentPage,
             hasMorePages,

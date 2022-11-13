@@ -2,8 +2,7 @@ package com.cs371m.mypod.api
 
 import android.util.Log
 import com.apollographql.apollo3.ApolloClient
-import com.apollographql.apollo3.api.ApolloResponse
-import com.cs371m.mypod.MainActivity
+
 
 class MyPodRepo(private val podchaserAPI: ApolloClient) {
 
@@ -23,8 +22,16 @@ class MyPodRepo(private val podchaserAPI: ApolloClient) {
     }
 
     // Get profile details
-    suspend fun getProfile(id: String): ProfileQuery.Podcast? {
-        val results = podchaserAPI.query(ProfileQuery(id)).execute().data;
+    suspend fun getProfile(id: String, page:Int): ProfileQuery.Podcast? {
+        val results = podchaserAPI.query(ProfileQuery(id,page)).execute().data;
+        if (results != null) {
+            return results.podcast!!
+        };
+        else return null;
+    }
+
+    suspend fun  getPodcast(id: String): PodcastQuery.Podcast? {
+        val results = podchaserAPI.query(PodcastQuery(id)).execute().data;
         if (results != null) {
             return results.podcast!!
         };
