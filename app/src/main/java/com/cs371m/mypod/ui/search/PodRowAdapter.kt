@@ -52,16 +52,12 @@ class PodRowAdapter(private val viewModel: MainViewModel)
         podRowBinding.rowTitle.text = podcast.title;
         if (podcast.imageUrl != null)
             Glide.glideFetch(podcast.imageUrl.toString(), podcast.imageUrl.toString(), podRowBinding.rowImage)
-        val context =  podRowBinding.root.context
-        val fragmentManager = (context as FragmentActivity).supportFragmentManager
+
 
         podRowBinding.root.setOnClickListener(){
             viewModel.updateProfile(podcast.applePodcastsId!!)
-            fragmentManager.commitNow {
-                replace(R.id.nav_host_fragment_activity_main,ProfileFragment.newInstance() )// your container and your fragment
-                setReorderingAllowed(true)
-                setTransition(TRANSIT_FRAGMENT_OPEN)
-            }
+            viewModel.getNavController().navigate(R.id.navigation_profile)
+
 
         }
 

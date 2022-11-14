@@ -2,6 +2,7 @@ package com.cs371m.mypod
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -9,7 +10,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.cs371m.mypod.api.PodcastSearchQuery
 import com.cs371m.mypod.databinding.ActivityMainBinding
 import com.cs371m.mypod.ui.MainViewModel
 
@@ -37,7 +37,15 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        viewModel.setNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            if(destination.id == R.id.navigation_profile) {
 
+                navView.visibility = View.GONE
+            } else {
 
+                navView.visibility = View.VISIBLE
+            }
+        }
     }
 }

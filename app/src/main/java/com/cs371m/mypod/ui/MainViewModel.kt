@@ -5,12 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.cs371m.mypod.api.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-
+    private var navController:NavController?= null;
     private val podchaserApi = PodchaserAPI.create();
     private val myPodRepo = MyPodRepo(podchaserApi);
     private val searchResults = MutableLiveData<List<PodcastSearchQuery.Data1>>();
@@ -118,6 +119,13 @@ class MainViewModel : ViewModel() {
 
     fun debugPL(): List<String> {
         return podcastsList.value!!;
+    }
+
+    fun setNavController(navController: NavController){
+        this.navController = navController
+    }
+    fun getNavController():NavController{
+        return navController!!
     }
 
 }
