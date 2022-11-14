@@ -1,12 +1,14 @@
 package com.cs371m.mypod.ui.search
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cs371m.mypod.databinding.FragmentSearchBinding
 import com.cs371m.mypod.ui.MainViewModel
@@ -37,37 +39,101 @@ class SearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set up adapter
-        val adapter = PodRowAdapter(viewModel);
-        binding.searchSubsList.adapter = adapter;
-        binding.searchSubsList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        // Search State (true = podcast, false = episode)
+        val podcastSearch = MutableLiveData<Boolean>();
+
+        // Set up initial state
+        binding.podcastToggle.isChecked = true;
+        binding.episodeToggle.isChecked = false;
+        podcastSearch.postValue(true);
+        var searchTerm: String = "";
+
+        // Set up initial adapters
+        val episodeSearchAdapter = EpisodeSearchAdapter(viewModel);
+        val podcastArtistSearchAdapter = PodcastArtistSearchAdapter(viewModel);
+        binding.searchList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false);
+
+        // Handle Toggles
+        val podcastToggle = binding.podcastToggle;
+        val episodeToggle = binding.episodeToggle;
+        binding.podcastToggle.setOnClickListener {
+            podcastToggle.isChecked = true;
+            episodeToggle.isChecked = false;
+            // Switch state
+            podcastSearch.postValue(true);
+        }
+        binding.episodeToggle.setOnClickListener {
+            podcastToggle.isChecked = false;
+            episodeToggle.isChecked = true;
+            // Switch state
+            podcastSearch.postValue(false);
+        }
+
+        // Switch adapter on toggles
+        podcastSearch.observe(viewLifecycleOwner) {
+            if (it) {
+                binding.searchList.adapter = podcastArtistSearchAdapter;
+            }
+            else {
+                binding.searchList.adapter = episodeSearchAdapter;
+            }
+        }
+
+        // Handle user input
         binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
             override fun onQueryTextSubmit(query: String?): Boolean {
-// do something on text submit
-                if(query!=null) {
-                    viewModel.searchPodcasts(query!!, 20,0)
+
+                // Search based on state
+                if(query!=null && query!!.length > 2) {
+
+                    // Podcast Search
+                    if (binding.podcastToggle.isChecked) {
+                        viewModel.searchPodcastArtists(query, 5);
+                    }
+                    // Episode Search
+                    if (binding.episodeToggle.isChecked) {
+                        viewModel.searchEpisodes(query, 20);
+                    }
+
                     return true
                 }
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-// do something when text changes
+
+                // Set state
+                searchTerm = newText.toString();
+
+                // Search based on state
                 if(newText!=null && newText!!.length > 2) {
-                    viewModel.searchPodcasts(newText!!, 20,0)
+
+//                    // Podcast Search
+//                    if (binding.podcastToggle.isChecked) {
+//                        viewModel.searchPodcastArtists(newText, 20);
+//                    }
+//                    // Episode Search
+//                    if (binding.episodeToggle.isChecked) {
+//                        viewModel.searchEpisodes(newText, 20);
+//                    }
+
                     return true
                 }
                 return false
             }
+
         })
 
-
-
-        // Display podcasts
-        viewModel.observeSearchResults().observe(viewLifecycleOwner) {
-            adapter.submitList(it);
+        // Display results
+        viewModel.observePodcastArtistSearchResults().observe(viewLifecycleOwner) {
+            podcastArtistSearchAdapter.submitList(it);
+            podcastArtistSearchAdapter.notifyDataSetChanged();
         }
-
+        viewModel.observeEpisodeSearchResults().observe(viewLifecycleOwner) {
+            episodeSearchAdapter.submitList(it);
+            episodeSearchAdapter.notifyDataSetChanged();
+        }
 
     }
 

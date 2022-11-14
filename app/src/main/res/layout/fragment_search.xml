@@ -15,19 +15,65 @@
         style="@android:style/Widget.Material.SearchView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:queryHint="Enter a podcast name or genre here"
         android:iconifiedByDefault="false"
-        app:iconifiedByDefault="false"
+        android:queryHint="Enter a podcast name or genre here"
         android:visibility="visible"
-        tools:visibility="visible" />
+        app:iconifiedByDefault="false"
+        tools:visibility="visible"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp">
 
+    </SearchView>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/searchSubsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        <ToggleButton
+            android:id="@+id/podcastToggle"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:textOff="Podcast"
+            android:textOn="Podcast"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/episodeToggle"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/white"
+            android:background="@drawable/toggle_button" />
 
-            </androidx.recyclerview.widget.RecyclerView>
+        <ToggleButton
+            android:id="@+id/episodeToggle"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:textOff="Episode"
+            android:textOn="Episode"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/podcastToggle"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/white"
+            android:background="@drawable/toggle_button"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/searchList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false">
+        </androidx.recyclerview.widget.RecyclerView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

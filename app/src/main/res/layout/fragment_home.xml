@@ -12,21 +12,23 @@
         android:id="@+id/homeContinueText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
+        android:padding="10dp"
         android:text="Continue Listening"
-        android:textSize="18sp" />
+        android:textColor="@color/mp_lightgrey"
+        android:textSize="40sp"
+        android:textStyle="bold" />
 
-    <HorizontalScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/homeContinueScroll"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/continueList"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:nestedScrollingEnabled="false"
             android:orientation="horizontal" />
-    </HorizontalScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <TextView
         android:id="@+id/homeSubsText"
@@ -34,25 +36,20 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:text="Subscriptions"
-        android:textSize="18sp" />
+        android:textColor="@color/mp_lightgrey"
+        android:textSize="40sp"
+        android:textStyle="bold" />
 
-<!--    <ScrollView-->
-<!--        android:id="@+id/homeSubsScroll"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent">-->
-
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
-
-<!--            <androidx.recyclerview.widget.RecyclerView-->
-<!--                android:id="@+id/homeSubsList"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content">-->
-
-<!--            </androidx.recyclerview.widget.RecyclerView>-->
-<!--        </LinearLayout>-->
-<!--    </ScrollView>-->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/homeSubsScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/subsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:nestedScrollingEnabled="false"
+            android:orientation="horizontal" />
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

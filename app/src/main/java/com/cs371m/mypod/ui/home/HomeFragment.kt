@@ -11,6 +11,7 @@ import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cs371m.mypod.databinding.FragmentHomeBinding
 import com.cs371m.mypod.ui.MainViewModel
@@ -43,28 +44,55 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Set up adapter
-        val adapter = PodTileAdapter(viewModel);
-        binding.continueList.adapter = adapter;
-        binding.continueList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
+        // ########### TEST ###########
+        val testEpisodes = mutableListOf<String>();
+        testEpisodes.add("1405972616");
+        testEpisodes.add("1495608381");
+        testEpisodes.add("503300852");
+        testEpisodes.add("1322200189");
+        testEpisodes.add("956276360");
+        testEpisodes.add("626605826");
+        viewModel.setContinueList(testEpisodes);
 
-        val podList = mutableListOf<String>();
-        podList.add("998568017");
-        podList.add("1322200189")
-        podList.add("949195280")
-        podList.add("1401698612")
-        podList.add("1112004494")
-        viewModel.setPodcastsList(podList);
+        val testInputs = mutableListOf<String>();
+        testInputs.add("1151551839");
+        testInputs.add("1482427275");
+        testInputs.add("1230146263");
+        testInputs.add("456058945");
+        testInputs.add("140064169");
+        testInputs.add("729430130");
+        testInputs.add("729430126");
+        viewModel.setSubscriptionList(testInputs)
+        // ########### TEST ###########
 
-        // Search for podcast data everytime list is updated
-        viewModel.observePodcastsList().observe(viewLifecycleOwner) {
-            viewModel.searchPodcastsList();
+        // TODO: Need to get subscriptions & continue listening lists from a database
+
+        // Set up adapters
+        val subAdapter = SubscriptionsAdaper(viewModel);
+        binding.subsList.adapter = subAdapter;
+        binding.subsList.layoutManager = GridLayoutManager(this.context, 4)
+        val continueAdapter = ContinueAdapter(viewModel);
+        binding.continueList.adapter = continueAdapter;
+        binding.continueList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false);
+
+        // Subscription List Observers
+        viewModel.observeSubscriptionList().observe(viewLifecycleOwner) {
+            viewModel.processSubscriptionList();
+        }
+        viewModel.observeSubscriptionListData().observe(viewLifecycleOwner) {
+            Log.d("#################################################", "Subscription List Changed (Size: ${it.size})")
+            subAdapter.submitList(it);
+            subAdapter.notifyDataSetChanged();
         }
 
-        // Display podcasts
-        viewModel.observePodcastsDataList().observe(viewLifecycleOwner) {
-            adapter.submitList(it);
-            Log.d("XXXXXXXXXXXXXXXXXX", "${binding.continueList.size}")
+        // Continue Listening List Observers
+        viewModel.observeContinueList().observe(viewLifecycleOwner) {
+            viewModel.processContinueList();
+        }
+        viewModel.observeContinueListData().observe(viewLifecycleOwner) {
+            Log.d("#################################################", "Continue Listening List Changed (Size: ${it.size})")
+            continueAdapter.submitList(it);
+            continueAdapter.notifyDataSetChanged();
         }
 
     }

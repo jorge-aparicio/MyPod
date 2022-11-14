@@ -1,28 +1,26 @@
 package com.cs371m.mypod.ui.home
 
-import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.cs371m.mypod.api.PodcastQuery
+import com.cs371m.mypod.api.ITunesAPI
 import com.cs371m.mypod.databinding.PodTileBinding
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
 
-class PodTileAdapter(private val viewModel: MainViewModel)
-    : ListAdapter<PodcastQuery.Podcast, PodTileAdapter.VH>(PodcastDiff()) {
+class ContinueAdapter(private val viewModel: MainViewModel)
+    : ListAdapter<ITunesAPI.Episode, ContinueAdapter.VH>(EpisodeDiff()) {
 
-    class PodcastDiff : DiffUtil.ItemCallback<PodcastQuery.Podcast>() {
-        override fun areItemsTheSame(oldItem: PodcastQuery.Podcast, newItem: PodcastQuery.Podcast): Boolean {
-            return oldItem.id == newItem.id;
+    class EpisodeDiff : DiffUtil.ItemCallback<ITunesAPI.Episode>() {
+        override fun areItemsTheSame(oldItem: ITunesAPI.Episode, newItem: ITunesAPI.Episode): Boolean {
+            return (oldItem.trackId == newItem.trackId) && (oldItem.trackName == newItem.trackName);
         }
 
-        override fun areContentsTheSame(oldItem: PodcastQuery.Podcast, newItem: PodcastQuery.Podcast): Boolean {
-            return oldItem.id == newItem.id;
+        override fun areContentsTheSame(oldItem: ITunesAPI.Episode, newItem: ITunesAPI.Episode): Boolean {
+            return (oldItem.trackId == newItem.trackId) && (oldItem.trackName == newItem.trackName);
         }
 
     }
@@ -43,11 +41,12 @@ class PodTileAdapter(private val viewModel: MainViewModel)
     override fun onBindViewHolder(holder: VH, position: Int) {
         val podTileBinding = holder.podTileBinding;
 
-        val podcast = getItem(position);
-        podTileBinding.tileTitle.text = podcast.title;
-        if (podcast.imageUrl != null)
-            Glide.glideFetch(podcast.imageUrl.toString(), podcast.imageUrl.toString(), podTileBinding.tileImage)
+        // Set the title
+        val episode = getItem(holder.adapterPosition);
+        podTileBinding.tileTitle.text = episode.artistName;
 
+        // Set the image
+        Glide.glideFetch(episode.artworkUrl600, episode.artworkUrl600, podTileBinding.tileImage)
     }
 
 }

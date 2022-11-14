@@ -10,23 +10,16 @@
     android:orientation="vertical"
     tools:context=".ui.subscriptions.SubscriptionsFragment">
 
-    <ScrollView
-        android:id="@+id/homeSubsScroll"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/subFragScroll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/subFragList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/subsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-            </androidx.recyclerview.widget.RecyclerView>
-        </LinearLayout>
-    </ScrollView>
+            android:layout_height="match_parent"
+            android:nestedScrollingEnabled="false"
+            android:orientation="horizontal" />
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>
