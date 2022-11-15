@@ -1,6 +1,5 @@
 package com.cs371m.mypod.ui
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -128,4 +127,21 @@ class MainViewModel : ViewModel() {
         return navController!!
     }
 
+
+    // This method converts time in milliseconds to minutes-second formatted string
+    fun convertTime(seconds: Int): String {
+        //XXX Write me
+        val totalMinutes = seconds / 60
+        val remainingSeconds = seconds % 60
+
+        return if (totalMinutes < 60 )
+            String.format("%02d:%02d", totalMinutes, remainingSeconds)
+        else{
+            val totalHours = totalMinutes/60
+            val remainingMinutes = totalMinutes % 60
+            String.format("%02d:%02d:%02d", totalHours,remainingMinutes, remainingSeconds)
+
+        }
+
+    }
 }

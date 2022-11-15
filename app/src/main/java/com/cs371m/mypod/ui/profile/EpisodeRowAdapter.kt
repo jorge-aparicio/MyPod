@@ -1,15 +1,18 @@
 package com.cs371m.mypod.ui.search
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.cs371m.mypod.api.EpisodesQuery
+import com.cs371m.mypod.api.type.DateTime
 import com.cs371m.mypod.databinding.ProfileRowBinding
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class EpisodeRowAdapter(private val viewModel: MainViewModel)
         : ListAdapter<EpisodesQuery.Data1, EpisodeRowAdapter.VH>(PodcastDiff()) {
@@ -46,8 +49,12 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
                 rowBinding.episodeTitle.text = episode.title;
                 if (episode.imageUrl != null)
                         Glide.glideFetch(episode.imageUrl.toString(), episode.imageUrl.toString(), rowBinding.episodeImage)
-                rowBinding.episodeDate.text = episode.airDate.toString()
-                rowBinding.episodeTime.text = episode.length.toString()
+                val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+                val datetime: LocalDateTime = LocalDateTime.parse(episode.airDate.toString(), formatter)
+
+                rowBinding.episodeDate.text = datetime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+
+                rowBinding.episodeTime.text = viewModel.convertTime(episode.length!!)
 
         }
 
