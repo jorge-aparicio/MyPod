@@ -11,15 +11,15 @@ import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
 
 class PodcastArtistSearchAdapter(private val viewModel: MainViewModel)
-    : ListAdapter<ITunesAPI.PodcastArtist, PodcastArtistSearchAdapter.VH>(PodcastDiff()) {
+    : ListAdapter<ITunesAPI.Podcast, PodcastArtistSearchAdapter.VH>(PodcastDiff()) {
 
-    class PodcastDiff : DiffUtil.ItemCallback<ITunesAPI.PodcastArtist>() {
-        override fun areItemsTheSame(oldItem: ITunesAPI.PodcastArtist, newItem: ITunesAPI.PodcastArtist): Boolean {
-            return oldItem.artistId == newItem.artistId;
+    class PodcastDiff : DiffUtil.ItemCallback<ITunesAPI.Podcast>() {
+        override fun areItemsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
+            return oldItem.collectionId == newItem.collectionId;
         }
 
-        override fun areContentsTheSame(oldItem: ITunesAPI.PodcastArtist, newItem: ITunesAPI.PodcastArtist): Boolean {
-            return oldItem.artistId == newItem.artistId;
+        override fun areContentsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
+            return oldItem.collectionId == newItem.collectionId;
         }
 
     }
@@ -41,8 +41,8 @@ class PodcastArtistSearchAdapter(private val viewModel: MainViewModel)
         val podRowBinding = holder.podRowBinding;
 
         val podcast = getItem(position);
-        podRowBinding.rowTitle.text = podcast.artistName;
-        Glide.glideFetch(podcast.imageUrl, podcast.imageUrl, podRowBinding.rowImage)
+        podRowBinding.rowTitle.text = podcast.collectionName;
+        Glide.glideFetch(podcast.artworkUrl100, podcast.artworkUrl100, podRowBinding.rowImage)
     }
 
 }

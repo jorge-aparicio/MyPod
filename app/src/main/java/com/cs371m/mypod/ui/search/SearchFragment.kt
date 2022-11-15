@@ -42,41 +42,19 @@ class SearchFragment : Fragment() {
         // Search State (true = podcast, false = episode)
         val podcastSearch = MutableLiveData<Boolean>();
 
-        // Set up initial state
-        binding.podcastToggle.isChecked = true;
-        binding.episodeToggle.isChecked = false;
         podcastSearch.postValue(true);
         var searchTerm: String = "";
 
         // Set up initial adapters
-        val episodeSearchAdapter = EpisodeSearchAdapter(viewModel);
         val podcastArtistSearchAdapter = PodcastArtistSearchAdapter(viewModel);
         binding.searchList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false);
 
-        // Handle Toggles
-        val podcastToggle = binding.podcastToggle;
-        val episodeToggle = binding.episodeToggle;
-        binding.podcastToggle.setOnClickListener {
-            podcastToggle.isChecked = true;
-            episodeToggle.isChecked = false;
-            // Switch state
-            podcastSearch.postValue(true);
-        }
-        binding.episodeToggle.setOnClickListener {
-            podcastToggle.isChecked = false;
-            episodeToggle.isChecked = true;
-            // Switch state
-            podcastSearch.postValue(false);
-        }
 
         // Switch adapter on toggles
         podcastSearch.observe(viewLifecycleOwner) {
-            if (it) {
+
                 binding.searchList.adapter = podcastArtistSearchAdapter;
-            }
-            else {
-                binding.searchList.adapter = episodeSearchAdapter;
-            }
+
         }
 
         // Handle user input
@@ -86,16 +64,7 @@ class SearchFragment : Fragment() {
 
                 // Search based on state
                 if(query!=null && query!!.length > 2) {
-
-                    // Podcast Search
-                    if (binding.podcastToggle.isChecked) {
-                        viewModel.searchPodcastArtists(query, 5);
-                    }
-                    // Episode Search
-                    if (binding.episodeToggle.isChecked) {
-                        viewModel.searchEpisodes(query, 20);
-                    }
-
+                        viewModel.searchPodcasts(query, 15);
                     return true
                 }
                 return false
@@ -109,14 +78,9 @@ class SearchFragment : Fragment() {
                 // Search based on state
                 if(newText!=null && newText!!.length > 2) {
 
-//                    // Podcast Search
-//                    if (binding.podcastToggle.isChecked) {
-//                        viewModel.searchPodcastArtists(newText, 20);
-//                    }
-//                    // Episode Search
-//                    if (binding.episodeToggle.isChecked) {
-//                        viewModel.searchEpisodes(newText, 20);
-//                    }
+
+                        viewModel.searchPodcasts(newText, 20);
+
 
                     return true
                 }
@@ -130,10 +94,7 @@ class SearchFragment : Fragment() {
             podcastArtistSearchAdapter.submitList(it);
             podcastArtistSearchAdapter.notifyDataSetChanged();
         }
-        viewModel.observeEpisodeSearchResults().observe(viewLifecycleOwner) {
-            episodeSearchAdapter.submitList(it);
-            episodeSearchAdapter.notifyDataSetChanged();
-        }
+
 
     }
 

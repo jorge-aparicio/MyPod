@@ -11,15 +11,15 @@ import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
 
 class SubscriptionsAdaper(private val viewModel: MainViewModel)
-    : ListAdapter<ITunesAPI.PodcastArtist, SubscriptionsAdaper.VH>(PodcastDiff()) {
+    : ListAdapter<ITunesAPI.Podcast, SubscriptionsAdaper.VH>(PodcastDiff()) {
 
-    class PodcastDiff : DiffUtil.ItemCallback<ITunesAPI.PodcastArtist>() {
-        override fun areItemsTheSame(oldItem: ITunesAPI.PodcastArtist, newItem: ITunesAPI.PodcastArtist): Boolean {
-            return (oldItem.artistId == newItem.artistId) && (oldItem.artistName == newItem.artistName);
+    class PodcastDiff : DiffUtil.ItemCallback<ITunesAPI.Podcast>() {
+        override fun areItemsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
+            return (oldItem.collectionId == newItem.collectionId) && (oldItem.artistName == newItem.artistName);
         }
 
-        override fun areContentsTheSame(oldItem: ITunesAPI.PodcastArtist, newItem: ITunesAPI.PodcastArtist): Boolean {
-            return (oldItem.artistId == newItem.artistId) && (oldItem.artistName == newItem.artistName);
+        override fun areContentsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
+            return (oldItem.collectionId == newItem.collectionId) && (oldItem.artistName == newItem.artistName);
         }
 
     }
@@ -45,7 +45,7 @@ class SubscriptionsAdaper(private val viewModel: MainViewModel)
         podTileBinding.tileTitle.text = podcast.artistName;
 
         // Set the image
-        Glide.glideFetch(podcast.imageUrl, podcast.imageUrl, podTileBinding.tileImage)
+        Glide.glideFetch(podcast.artworkUrl100, podcast.artworkUrl100, podTileBinding.tileImage)
     }
 
 }

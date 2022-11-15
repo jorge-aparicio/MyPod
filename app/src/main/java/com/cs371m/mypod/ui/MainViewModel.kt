@@ -23,19 +23,19 @@ class MainViewModel : ViewModel() {
     private val myPodRepo = MyPodRepo(iTunesAPI);
 
     // Search results
-    private val podcastArtistSearchResults = MutableLiveData<List<ITunesAPI.PodcastArtist>>()
-    private val episodeSearchResults = MutableLiveData<List<ITunesAPI.Episode>>();
+    private val podcastSearchResults = MutableLiveData<List<ITunesAPI.Podcast>>()
+//    private val episodeSearchResults = MutableLiveData<List<ITunesAPI.Episode>>();
 
     // Subscriptions and Continue Listening Lists
     private val subscriptionList = MutableLiveData<List<String>>();
-    private val subscriptionListData = MutableLiveData<List<ITunesAPI.PodcastArtist>>();
+    private val subscriptionListData = MutableLiveData<List<ITunesAPI.Podcast>>();
     private val continueList = MutableLiveData<List<String>>();
-    private val continueListListData = MutableLiveData<List<ITunesAPI.Episode>>();
+    private val continueListListData = MutableLiveData<List<ITunesAPI.Podcast>>();
 
 
 
     // Podcast Search using a search term
-    fun searchPodcastArtists(term: String, limit: Int) {
+    fun searchPodcasts(term: String, limit: Int) {
         viewModelScope.launch(
             context = viewModelScope.coroutineContext
                     + Dispatchers.IO
@@ -46,53 +46,48 @@ class MainViewModel : ViewModel() {
                     }
         ) {
             // Get search results
-            val result = myPodRepo.searchPodcastArtists(term, limit);
-            // Get the images for search results
-            if (result.isNotEmpty()) {
-                for (i in 0..(result.size - 1)) {
-                    result[i].imageUrl = getPodcastArtistImage(result[i].artistName);
-                }
-            }
-            podcastArtistSearchResults.postValue(result);
+            val result = myPodRepo.searchPodcasts(term, limit);
+            // Get the images for search result
+            podcastSearchResults.postValue(result);
         }
     }
 
-    // Episode Search using a search term
-    fun searchEpisodes(term: String, limit: Int) {
-        viewModelScope.launch(
-            context = viewModelScope.coroutineContext
-                    + Dispatchers.IO
-                    + CoroutineExceptionHandler{
-                        _, throwable ->
-                        Log.d("#################################################", "ERROR!!!!!!!!!!!!!!!!!!!!!!!: {$throwable.message}")
-                        throwable.printStackTrace();
-                    }
-        ) {
-            // Get search results
-            val result = myPodRepo.searchEpisodes(term, limit);
-            for (i in 0..(result.size - 1)) {
-                if (result[i].artworkUrl600 == null) result[i].artworkUrl600 = "https://upload.wikimedia.org/wikipedia/commons/f/f1/Heavy_red_%22x%22.png";
-            }
-            episodeSearchResults.postValue(result);
-        }
-    }
+//    // Episode Search using a search term
+//    fun searchEpisodes(term: String, limit: Int) {
+//        viewModelScope.launch(
+//            context = viewModelScope.coroutineContext
+//                    + Dispatchers.IO
+//                    + CoroutineExceptionHandler{
+//                        _, throwable ->
+//                        Log.d("#################################################", "ERROR!!!!!!!!!!!!!!!!!!!!!!!: {$throwable.message}")
+//                        throwable.printStackTrace();
+//                    }
+//        ) {
+//            // Get search results
+//            val result = myPodRepo.searchEpisodes(term, limit);
+//            for (i in 0..(result.size - 1)) {
+//                if (result[i].artworkUrl600 == null) result[i].artworkUrl600 = "https://upload.wikimedia.org/wikipedia/commons/f/f1/Heavy_red_%22x%22.png";
+//            }
+//            episodeSearchResults.postValue(result);
+//        }
+//    }
 
     // Get data for the subscription list
     fun processSubscriptionList() = viewModelScope.launch(
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
 
-        val ids = subscriptionList.value;
-        if (ids != null) {
-            val podcastList = mutableListOf<ITunesAPI.PodcastArtist>();
-            // Get lookup data and append image to each podcast
-            for (i in 0..(ids.size - 1)) {
-                val podcast = myPodRepo.lookupPodcastArtist(ids[i]);
-                podcast.imageUrl = getPodcastArtistImage(podcast.artistName);
-                podcastList.add(podcast);
-            }
-            subscriptionListData.postValue(podcastList);
-        }
+//        val ids = subscriptionList.value;
+//        if (ids != null) {
+//            val podcastList = mutableListOf<ITunesAPI.PodcastArtist>();
+//            // Get lookup data and append image to each podcast
+//            for (i in 0..(ids.size - 1)) {
+//                val podcast = myPodRepo.lookupPodcastArtist(ids[i]);
+//                podcast.imageUrl = getPodcastArtistImage(podcast.artistName);
+//                podcastList.add(podcast);
+//            }
+//            subscriptionListData.postValue(podcastList);
+//        }
     }
 
     // Get data for the continue listening list
@@ -100,13 +95,13 @@ class MainViewModel : ViewModel() {
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO) {
 
-        val ids = continueList.value;
-        if (ids != null) {
-            val episodeList = mutableListOf<ITunesAPI.Episode>();
-            // Get lookup data and append image to each podcast
-            for (i in 0..(ids.size - 1)) episodeList.add(myPodRepo.lookupEpisode(ids[i]));
-            continueListListData.postValue(episodeList);
-        }
+//        val ids = continueList.value;
+//        if (ids != null) {
+//            val episodeList = mutableListOf<ITunesAPI.Episode>();
+//            // Get lookup data and append image to each podcast
+//            for (i in 0..(ids.size - 1)) episodeList.add(myPodRepo.lookupEpisode(ids[i]));
+//            continueListListData.postValue(episodeList);
+//        }
     }
 
     // Get image for Podcast Artists
@@ -118,12 +113,12 @@ class MainViewModel : ViewModel() {
     }
 
     // Observers
-    fun observePodcastArtistSearchResults(): LiveData<List<ITunesAPI.PodcastArtist>> {return podcastArtistSearchResults};
-    fun observeEpisodeSearchResults(): LiveData<List<ITunesAPI.Episode>> {return episodeSearchResults};
+    fun observePodcastArtistSearchResults(): LiveData<List<ITunesAPI.Podcast>> {return podcastSearchResults};
+//    fun observeEpisodeSearchResults(): LiveData<List<ITunesAPI.Episode>> {return episodeSearchResults};
     fun observeSubscriptionList(): LiveData<List<String>> {return subscriptionList};
-    fun observeSubscriptionListData(): LiveData<List<ITunesAPI.PodcastArtist>> {return subscriptionListData};
+    fun observeSubscriptionListData(): LiveData<List<ITunesAPI.Podcast>> {return subscriptionListData};
     fun observeContinueList(): LiveData<List<String>> {return continueList};
-    fun observeContinueListData(): LiveData<List<ITunesAPI.Episode>> {return continueListListData};
+    fun observeContinueListData(): LiveData<List<ITunesAPI.Podcast>> {return continueListListData};
 
     // Setters
     fun setSubscriptionList(list: List<String>) {
