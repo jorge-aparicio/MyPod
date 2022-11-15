@@ -49,7 +49,7 @@ class SearchFragment : Fragment() {
         val podcastArtistSearchAdapter = PodcastArtistSearchAdapter(viewModel);
         binding.searchList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false);
 
-
+        viewModel.getTop25();
         // Switch adapter on toggles
         podcastSearch.observe(viewLifecycleOwner) {
 
@@ -82,6 +82,10 @@ class SearchFragment : Fragment() {
                         viewModel.searchPodcasts(newText, 20);
 
 
+                    return true
+                }
+                if(newText!!.isEmpty()) {
+                    viewModel.getTop25()
                     return true
                 }
                 return false

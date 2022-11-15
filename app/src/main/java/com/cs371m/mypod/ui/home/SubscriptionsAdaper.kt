@@ -15,11 +15,11 @@ class SubscriptionsAdaper(private val viewModel: MainViewModel)
 
     class PodcastDiff : DiffUtil.ItemCallback<ITunesAPI.Podcast>() {
         override fun areItemsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
-            return (oldItem.collectionId == newItem.collectionId) && (oldItem.artistName == newItem.artistName);
+            return (oldItem.collectionId == newItem.collectionId) && (oldItem.collectionName == newItem.collectionName);
         }
 
         override fun areContentsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
-            return (oldItem.collectionId == newItem.collectionId) && (oldItem.artistName == newItem.artistName);
+            return (oldItem.collectionId == newItem.collectionId) && (oldItem.collectionName == newItem.collectionName);
         }
 
     }
@@ -42,7 +42,7 @@ class SubscriptionsAdaper(private val viewModel: MainViewModel)
 
         // Set the title
         val podcast = getItem(holder.adapterPosition);
-        podTileBinding.tileTitle.text = podcast.artistName;
+        podTileBinding.tileTitle.text = podcast.collectionName;
 
         // Set the image
         Glide.glideFetch(podcast.artworkUrl100, podcast.artworkUrl100, podTileBinding.tileImage)

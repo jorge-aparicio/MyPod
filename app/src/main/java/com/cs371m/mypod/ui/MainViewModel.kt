@@ -20,7 +20,9 @@ class MainViewModel : ViewModel() {
 
     // API Stuff
     private val iTunesAPI = ITunesAPI.create();
-    private val myPodRepo = MyPodRepo(iTunesAPI);
+    private val appleAPI = AppleAPI.create();
+
+    private val myPodRepo = MyPodRepo(iTunesAPI,appleAPI);
 
     // Search results
     private val podcastSearchResults = MutableLiveData<List<ITunesAPI.Podcast>>()
@@ -33,6 +35,23 @@ class MainViewModel : ViewModel() {
     private val continueListListData = MutableLiveData<List<ITunesAPI.Podcast>>();
 
 
+    fun getTop25(){
+        viewModelScope.launch(
+            context = viewModelScope.coroutineContext
+                    + Dispatchers.IO
+                    + CoroutineExceptionHandler{
+                    _, throwable ->
+                Log.d("#################################################", "ERROR!!!!!!!!!!!!!!!!!!!!!!!: {$throwable.message}")
+                throwable.printStackTrace();
+            }
+        ) {
+            // Get search results
+            val appleApiList = myPodRepo.getTop25()
+            val result =  appleApiList.map { applePod -> ITunesAPI.Podcast(applePod.id,applePod.name,applePod.artworkUrl100) }.toList()
+            // Get the images for search result
+            podcastSearchResults.postValue(result);
+        }
+    }
 
     // Podcast Search using a search term
     fun searchPodcasts(term: String, limit: Int) {

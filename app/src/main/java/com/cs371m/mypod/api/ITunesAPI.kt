@@ -11,30 +11,22 @@ interface ITunesAPI {
     // Episode Data
     data class PodcastSearchResultsList(val results: List<Podcast>);
     data class Podcast(val collectionId: String,
-                       val trackId: String,
-                       val artistName: String,
                        val collectionName: String,
-                       val trackName: String,
-                       val feedUrl: String,
-                       val releaseDate: String,
-                       val country: String,
-                       val primaryGenreName: String,
-                       val contentAdvisoryRating: String,
                        var artworkUrl100: String,
-                       val genres: List<String>
                        )
 
+    data class PodcastFeedResultsList(val results: List<PodcastFeed>);
+    data class PodcastFeed(val collectionId: String,
+                           val collectionName: String,
+                           var artworkUrl100: String,
+                           val feedUrl:String
+    )
 
-    // Image Data
-    data class SearchResultImageShell(val results: List<SearchResultImage>);
-    data class SearchResultImage(val artworkUrl100: String);
-
-    // Episode Search
     @GET("search?media=podcast&entity=podcast")
     suspend fun searchPodcasts(@Query("term") term: String, @Query("limit") limit: Int) : PodcastSearchResultsList;
     // Single Episode Lookup
     @GET("lookup?media=podcast&entity=podcast")
-    suspend fun lookupPodcast(@Query("id") id: String) : PodcastSearchResultsList;
+    suspend fun lookupPodcast(@Query("id") id: String) : PodcastFeedResultsList;
 
     /**
      * Factory class for convenient creation of the Api Service interface

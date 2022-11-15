@@ -16,11 +16,11 @@ class ContinueAdapter(private val viewModel: MainViewModel)
 
     class EpisodeDiff : DiffUtil.ItemCallback<ITunesAPI.Podcast>() {
         override fun areItemsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
-            return (oldItem.trackId == newItem.trackId) && (oldItem.trackName == newItem.trackName);
+            return (oldItem.collectionId == newItem.collectionId) && (oldItem.collectionName == newItem.collectionName);
         }
 
         override fun areContentsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
-            return (oldItem.trackId == newItem.trackId) && (oldItem.trackName == newItem.trackName);
+            return (oldItem.collectionId == newItem.collectionId) && (oldItem.collectionName == newItem.collectionName);
         }
 
     }
@@ -43,7 +43,7 @@ class ContinueAdapter(private val viewModel: MainViewModel)
 
         // Set the title
         val episode = getItem(holder.adapterPosition);
-        podTileBinding.tileTitle.text = episode.artistName;
+        podTileBinding.tileTitle.text = episode.collectionName;
 
         // Set the image
         Glide.glideFetch(episode.artworkUrl100, episode.artworkUrl100, podTileBinding.tileImage)
