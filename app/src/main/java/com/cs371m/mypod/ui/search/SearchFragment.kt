@@ -67,7 +67,10 @@ class SearchFragment : Fragment() {
                         viewModel.searchPodcasts(query, 15);
                     return true
                 }
-                return false
+                else  {
+                    viewModel.getTop25()
+                    return true
+                }
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
@@ -84,7 +87,7 @@ class SearchFragment : Fragment() {
 
                     return true
                 }
-                if(newText!!.isEmpty()) {
+                else {
                     viewModel.getTop25()
                     return true
                 }
