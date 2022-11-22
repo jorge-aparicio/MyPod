@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.cs371m.mypod.R
 import com.cs371m.mypod.api.ITunesAPI
 import com.cs371m.mypod.databinding.PodRowBinding
 import com.cs371m.mypod.glide.Glide
@@ -43,6 +44,14 @@ class PodcastArtistSearchAdapter(private val viewModel: MainViewModel)
         val podcast = getItem(position);
         podRowBinding.rowTitle.text = podcast.collectionName;
         Glide.glideFetch(podcast.artworkUrl100, podcast.artworkUrl100, podRowBinding.rowImage)
+
+        podRowBinding.root.setOnClickListener(){
+            viewModel.updateProfile(podcast.collectionId)
+            viewModel.getNavController().navigate(R.id.navigation_profile)
+
+
+        }
+
     }
 
 }

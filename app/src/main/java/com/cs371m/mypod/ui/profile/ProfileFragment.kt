@@ -11,6 +11,8 @@ import com.cs371m.mypod.databinding.FragmentPodProfileBinding
 import com.cs371m.mypod.databinding.FragmentSearchBinding
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
+import com.cs371m.mypod.ui.search.EpisodeRowAdapter
+
 //import com.cs371m.mypod.ui.search.EpisodeRowAdapter
 
 
@@ -41,14 +43,23 @@ class ProfileFragment : Fragment() {
             return root
         }
 
-        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-            super.onViewCreated(view, savedInstanceState)
-
-            // Set up Adapter
-
-
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val adapter = EpisodeRowAdapter(viewModel);
+        binding.episodeList.adapter = adapter
+        binding.episodeList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+        viewModel.observePodcastProfile().observe(viewLifecycleOwner){
+            binding.podcastTitle.text=it.collectionName
+            binding.podcastDescription.text = it.description
+            if (it.artworkUrl100 != null)
+                Glide.glideFetch(it.artworkUrl100, it.artworkUrl100, binding.podcastImage)
         }
+        viewModel.observeProfileEpisodes().observe(viewLifecycleOwner){
+            adapter.submitList(it)
+        }
+
+
+    }
 
         override fun onDestroyView() {
             super.onDestroyView()

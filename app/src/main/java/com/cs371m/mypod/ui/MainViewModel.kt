@@ -8,25 +8,31 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.cs371m.mypod.api.*
+import com.cs371m.mypod.models.PodcastTypes
+import com.cs371m.mypod.xml.FeedDownloader
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.prof.rssparser.Channel
+import com.prof.rssparser.Parser
+import kotlinx.coroutines.async
+import java.time.Duration
 
 class MainViewModel : ViewModel() {
 
     // Dunno what this does
-    private var navController:NavController?= null;
+    private var navController: NavController? = null;
 
     // API Stuff
     private val iTunesAPI = ITunesAPI.create();
     private val appleAPI = AppleAPI.create();
-
-    private val myPodRepo = MyPodRepo(iTunesAPI,appleAPI);
+    private val feedAPI = FeedAPI.create()
+    private val parser = Parser.Builder().build()
+    private val myPodRepo = MyPodRepo(iTunesAPI, appleAPI,feedAPI);
 
     // Search results
     private val podcastSearchResults = MutableLiveData<List<ITunesAPI.Podcast>>()
-//    private val episodeSearchResults = MutableLiveData<List<ITunesAPI.Episode>>();
 
     // Subscriptions and Continue Listening Lists
     private val subscriptionList = MutableLiveData<List<String>>();
@@ -34,20 +40,33 @@ class MainViewModel : ViewModel() {
     private val continueList = MutableLiveData<List<String>>();
     private val continueListListData = MutableLiveData<List<ITunesAPI.Podcast>>();
 
+    //
+    private val podcastProfile = MutableLiveData<PodcastTypes.PodcastProfile>();
+    private val profileEpisodes = MutableLiveData<List<PodcastTypes.PodcastEpisode>>();
+    private val lastEpisodeIndex = MutableLiveData(15);
+    private val episodeIncrement = 15;
 
-    fun getTop25(){
+    fun getTop25() {
         viewModelScope.launch(
             context = viewModelScope.coroutineContext
                     + Dispatchers.IO
-                    + CoroutineExceptionHandler{
-                    _, throwable ->
-                Log.d("#################################################", "ERROR!!!!!!!!!!!!!!!!!!!!!!!: {$throwable.message}")
+                    + CoroutineExceptionHandler { _, throwable ->
+                Log.d(
+                    "#################################################",
+                    "ERROR!!!!!!!!!!!!!!!!!!!!!!!: {$throwable.message}"
+                )
                 throwable.printStackTrace();
             }
         ) {
             // Get search results
             val appleApiList = myPodRepo.getTop25()
-            val result =  appleApiList.map { applePod -> ITunesAPI.Podcast(applePod.id,applePod.name,applePod.artworkUrl100) }.toList()
+            val result = appleApiList.map { applePod ->
+                ITunesAPI.Podcast(
+                    applePod.id,
+                    applePod.name,
+                    applePod.artworkUrl100
+                )
+            }.toList()
             // Get the images for search result
             podcastSearchResults.postValue(result);
         }
@@ -58,11 +77,13 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch(
             context = viewModelScope.coroutineContext
                     + Dispatchers.IO
-                    + CoroutineExceptionHandler{
-                        _, throwable ->
-                            Log.d("#################################################", "ERROR!!!!!!!!!!!!!!!!!!!!!!!: {$throwable.message}")
-                            throwable.printStackTrace();
-                    }
+                    + CoroutineExceptionHandler { _, throwable ->
+                Log.d(
+                    "#################################################",
+                    "ERROR!!!!!!!!!!!!!!!!!!!!!!!: {$throwable.message}"
+                )
+                throwable.printStackTrace();
+            }
         ) {
             // Get search results
             val result = myPodRepo.searchPodcasts(term, limit);
@@ -70,6 +91,75 @@ class MainViewModel : ViewModel() {
             podcastSearchResults.postValue(result);
         }
     }
+
+    fun updateProfile(id: String) = viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO
+    ) {
+
+        // Get Podcast Data
+        val podcast = myPodRepo.lookupPodcast(id)
+        val feedUrl = podcast.feedUrl
+        val imageUrl = podcast.artworkUrl100
+//        val channel = myPodRepo.getChannel(feedUrl)
+        val channel = async {FeedDownloader().loadXmlFromNetwork(feedUrl)[0]}.await()
+        println(channel)
+
+        // set profile podcast
+        println(channel)
+        if (channel != null) podcastProfile.postValue(
+            PodcastTypes.PodcastProfile(
+                id,
+                podcast.collectionName,
+                imageUrl,
+                feedUrl,
+                channel.description!!,
+                channel.items!!.size
+            )
+        )
+        val channelEps = channel.items
+        lastEpisodeIndex.postValue(15);
+        val bounds = Integer.min(lastEpisodeIndex.value!!, channelEps!!.size-1)
+        val episodes = channelEps!!.subList(0,bounds).map { article ->
+            PodcastTypes.PodcastEpisode(
+                article.guid!!,
+                article.title!!,
+                article.audioUrl!!,
+                article.image,
+                article.pubDate,
+                convertTime(article.duration!!)
+            )
+        }.toList()
+        if (episodes.isNotEmpty()) {
+            profileEpisodes.postValue(episodes)
+        }
+
+    }
+
+//    fun getMoreEpisodes(feed: String, inc: Int) = viewModelScope.launch(
+//        context = viewModelScope.coroutineContext
+//                + Dispatchers.IO
+//    ) {
+//        val channel = parser.getChannel(feed)
+//        val channelEps = channel.articles
+//        lastEpisodeIndex.postValue(lastEpisodeIndex.value!!+episodeIncrement);
+//        val episodes = channelEps.filterIndexed { index, _ ->
+//            if (index < lastEpisodeIndex.value!! && index > (lastEpisodeIndex.value!! - episodeIncrement)) true
+//            false
+//        }.map { article ->
+//            PodcastTypes.PodcastEpisode(
+//                article.guid!!,
+//                article.title!!,
+//                article.audio!!,
+//                article.image!!,
+//                article.pubDate!!
+//            )
+//        }.toList()
+//
+//        if (episodes.isNotEmpty()) {
+//            profileEpisodes.postValue(episodes)
+//        }
+//    }
 
 //    // Episode Search using a search term
 //    fun searchEpisodes(term: String, limit: Int) {
@@ -131,6 +221,7 @@ class MainViewModel : ViewModel() {
         return "https://upload.wikimedia.org/wikipedia/commons/f/f1/Heavy_red_%22x%22.png";
     }
 
+
     // Observers
     fun observePodcastArtistSearchResults(): LiveData<List<ITunesAPI.Podcast>> {return podcastSearchResults};
 //    fun observeEpisodeSearchResults(): LiveData<List<ITunesAPI.Episode>> {return episodeSearchResults};
@@ -138,6 +229,14 @@ class MainViewModel : ViewModel() {
     fun observeSubscriptionListData(): LiveData<List<ITunesAPI.Podcast>> {return subscriptionListData};
     fun observeContinueList(): LiveData<List<String>> {return continueList};
     fun observeContinueListData(): LiveData<List<ITunesAPI.Podcast>> {return continueListListData};
+
+    //
+    fun observePodcastProfile():MutableLiveData<PodcastTypes.PodcastProfile>{
+        return podcastProfile
+    }
+    fun observeProfileEpisodes():MutableLiveData<List<PodcastTypes.PodcastEpisode>>{
+        return profileEpisodes
+    }
 
     // Setters
     fun setSubscriptionList(list: List<String>) {
@@ -154,5 +253,24 @@ class MainViewModel : ViewModel() {
     fun getNavController():NavController{
         return navController!!
     }
+    // This method converts time in milliseconds to minutes-second formatted string
+    private fun convertTime(duration: String): String {
+        //XXX Write me
+        try{
+            val seconds = duration.toInt()
+        val totalMinutes = seconds / 60
+        val remainingSeconds = seconds % 60
 
+        return if (totalMinutes < 60 )
+            String.format("%02d:%02d", totalMinutes, remainingSeconds)
+        else{
+            val totalHours = totalMinutes/60
+            val remainingMinutes = totalMinutes % 60
+            String.format("%02d:%02d:%02d", totalHours,remainingMinutes, remainingSeconds)
+
+        }
+        }catch(e:Exception){
+            return duration
+        }
+    }
 }
