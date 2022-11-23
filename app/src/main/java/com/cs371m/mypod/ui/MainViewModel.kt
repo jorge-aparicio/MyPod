@@ -1,23 +1,21 @@
 package com.cs371m.mypod.ui
 
 import android.util.Log
-import androidx.core.text.htmlEncode
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.cs371m.mypod.api.*
+import com.cs371m.mypod.api.AppleAPI
+import com.cs371m.mypod.api.ITunesAPI
+import com.cs371m.mypod.api.MyPodRepo
 import com.cs371m.mypod.models.PodcastTypes
 import com.cs371m.mypod.xml.FeedDownloader
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import com.prof.rssparser.Channel
-import com.prof.rssparser.Parser
-import kotlinx.coroutines.async
-import java.time.Duration
+import kotlinx.coroutines.withContext
+import java.util.*
 
 class MainViewModel : ViewModel() {
 
@@ -27,7 +25,6 @@ class MainViewModel : ViewModel() {
     // API Stuff
     private val iTunesAPI = ITunesAPI.create();
     private val appleAPI = AppleAPI.create();
-    private val parser = Parser.Builder().build()
     private val myPodRepo = MyPodRepo(iTunesAPI, appleAPI);
 
     // Search results
@@ -101,36 +98,40 @@ class MainViewModel : ViewModel() {
         val feedUrl = podcast.feedUrl
         val imageUrl = podcast.artworkUrl100
 //        val channel = myPodRepo.getChannel(feedUrl)
-        val channel = async {FeedDownloader().loadXmlFromNetwork(feedUrl)[0]}.await()
-        println(channel)
+        withContext(Dispatchers.Default) {
+            val channel = FeedDownloader().loadXmlFromNetwork(feedUrl)[0]
+            println(channel)
 
-        // set profile podcast
-        println(channel)
-        if (channel != null) podcastProfile.postValue(
-            PodcastTypes.PodcastProfile(
-                id,
-                podcast.collectionName,
-                imageUrl,
-                feedUrl,
-                channel.description!!,
-                channel.items!!.size
+            // set profile podcast
+            println(channel)
+            if (channel != null) podcastProfile.postValue(
+                PodcastTypes.PodcastProfile(
+                    id,
+                    podcast.collectionName,
+                    imageUrl,
+                    feedUrl,
+                    channel.description!!,
+                    channel.items!!.size
+                )
             )
-        )
-        val channelEps = channel.items
-        lastEpisodeIndex.postValue(15);
-        val bounds = Integer.min(lastEpisodeIndex.value!!, channelEps!!.size-1)
-        val episodes = channelEps!!.subList(0,bounds).map { article ->
-            PodcastTypes.PodcastEpisode(
-                article.guid!!,
-                article.title!!,
-                article.audioUrl!!,
-                article.image,
-                article.pubDate,
-                convertTime(article.duration!!)
-            )
-        }.toList()
-        if (episodes.isNotEmpty()) {
-            profileEpisodes.postValue(episodes)
+            val channelEps = channel.items
+            lastEpisodeIndex.postValue(15);
+            val episodes = channelEps!!.map { article ->
+                 val uuidString= article.title!! + channel.title
+                val uuid = UUID.nameUUIDFromBytes(uuidString.toByteArray());
+                PodcastTypes.PodcastEpisode(
+                    uuid.toString(),
+                    article.title!!,
+                    article.audioUrl!!,
+                    article.image,
+                    article.pubDate,
+                    convertTime(article.duration)
+                )
+            }.toList()
+            if (episodes.isNotEmpty()) {
+                profileEpisodes.postValue(episodes)
+            }
+
         }
 
     }
@@ -253,8 +254,9 @@ class MainViewModel : ViewModel() {
         return navController!!
     }
     // This method converts time in milliseconds to minutes-second formatted string
-    private fun convertTime(duration: String): String {
+    private fun convertTime(duration: String?): String {
         //XXX Write me
+        if(duration!= null){
         try{
             val seconds = duration.toInt()
         val totalMinutes = seconds / 60
@@ -272,4 +274,7 @@ class MainViewModel : ViewModel() {
             return duration
         }
     }
+        return "??:??:??"
+    }
+
 }
