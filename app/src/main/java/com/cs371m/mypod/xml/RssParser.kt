@@ -126,7 +126,8 @@ class RssParser {
                 link = parser.getAttributeValue(null, "url")
                 parser.nextTag()
         }
-        parser.require(XmlPullParser.END_TAG, ns, "enclosure")
+        parser.next()
+
         return link
     }
 
@@ -200,6 +201,8 @@ class RssParser {
         if (tag == "itunes:image") {
                 link = parser.getAttributeValue(null, "href")
         }
+        parser.next()
+
         return link
     }
 
