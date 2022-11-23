@@ -27,9 +27,8 @@ class MainViewModel : ViewModel() {
     // API Stuff
     private val iTunesAPI = ITunesAPI.create();
     private val appleAPI = AppleAPI.create();
-    private val feedAPI = FeedAPI.create()
     private val parser = Parser.Builder().build()
-    private val myPodRepo = MyPodRepo(iTunesAPI, appleAPI,feedAPI);
+    private val myPodRepo = MyPodRepo(iTunesAPI, appleAPI);
 
     // Search results
     private val podcastSearchResults = MutableLiveData<List<ITunesAPI.Podcast>>()
