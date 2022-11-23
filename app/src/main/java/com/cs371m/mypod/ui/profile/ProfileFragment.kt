@@ -51,7 +51,9 @@ class ProfileFragment : Fragment() {
         viewModel.observePodcastProfile().observe(viewLifecycleOwner){
             binding.podcastTitle.text=it.collectionName
             binding.podcastDescription.text = it.description
-            if (it.artworkUrl100 != null)
+            binding.episodeDate.text = it.numEpisodes.toString() + " episodes"
+
+                if (it.artworkUrl100 != null)
                 Glide.glideFetch(it.artworkUrl100, it.artworkUrl100, binding.podcastImage)
         }
         viewModel.observeProfileEpisodes().observe(viewLifecycleOwner){
