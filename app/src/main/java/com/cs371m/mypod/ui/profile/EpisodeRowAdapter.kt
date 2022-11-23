@@ -1,6 +1,7 @@
 package com.cs371m.mypod.ui.search
 
 import android.view.LayoutInflater
+import android.view.View.*
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -45,9 +46,11 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
 
         val episode = getItem(position);
         rowBinding.episodeTitle.text = episode.episodeName;
-        if (episode.artworkUrl != null)
+        if (episode.artworkUrl != null){
+            rowBinding.episodeImage.visibility = VISIBLE
             Glide.glideFetch(episode.artworkUrl, episode.artworkUrl, rowBinding.episodeImage)
-
+        }
+        else rowBinding.episodeImage.visibility = GONE
         rowBinding.episodeTime.text = episode.duration
         rowBinding.episodeDate.text = parseDate(episode.pubDate)
 
