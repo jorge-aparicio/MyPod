@@ -60,7 +60,8 @@ class MainViewModel : ViewModel() {
                 ITunesAPI.Podcast(
                     applePod.id,
                     applePod.name,
-                    applePod.artworkUrl100
+                    applePod.artworkUrl100,
+                    null
                 )
             }.toList()
             // Get the images for search result
@@ -83,8 +84,9 @@ class MainViewModel : ViewModel() {
         ) {
             // Get search results
             val result = myPodRepo.searchPodcasts(term, limit);
+
             // Get the images for search result
-            podcastSearchResults.postValue(result);
+            podcastSearchResults.postValue(result.filter { podcast -> podcast.feedUrl != null });
         }
     }
 
@@ -95,7 +97,7 @@ class MainViewModel : ViewModel() {
 
         // Get Podcast Data
         val podcast = myPodRepo.lookupPodcast(id)
-        val feedUrl = podcast.feedUrl
+        val feedUrl = podcast.feedUrl!!
         val imageUrl = podcast.artworkUrl100
 //        val channel = myPodRepo.getChannel(feedUrl)
         withContext(Dispatchers.Default) {
@@ -116,7 +118,7 @@ class MainViewModel : ViewModel() {
             )
             val channelEps = channel.items
             lastEpisodeIndex.postValue(15);
-            val episodes = channelEps!!.map { article ->
+            val episodes = channelEps!!.filter{article -> article.audioUrl != null}.map { article ->
                  val uuidString= article.title!! + channel.title
                 val uuid = UUID.nameUUIDFromBytes(uuidString.toByteArray());
                 PodcastTypes.PodcastEpisode(

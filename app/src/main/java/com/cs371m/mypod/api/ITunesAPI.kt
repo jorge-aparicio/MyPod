@@ -10,16 +10,12 @@ interface ITunesAPI {
 
     // Episode Data
     data class PodcastSearchResultsList(val results: List<Podcast>);
-    data class Podcast(val collectionId: String,
-                       val collectionName: String,
-                       var artworkUrl100: String,
-                       )
-
-    data class PodcastFeedResultsList(val results: List<PodcastFeed>);
-    data class PodcastFeed(val collectionId: String,
-                           val collectionName: String,
-                           var artworkUrl100: String,
-                           val feedUrl:String
+    data class PodcastFeedResultsList(val results: List<Podcast>);
+    data class Podcast(
+        val collectionId: String,
+        val collectionName: String,
+        var artworkUrl100: String,
+        val feedUrl: String?
     )
 
     @GET("search?media=podcast&entity=podcast")

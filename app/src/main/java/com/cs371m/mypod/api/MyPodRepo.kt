@@ -10,7 +10,7 @@ class MyPodRepo(private val iTunesAPI: ITunesAPI, private val appleAPI: AppleAPI
         return iTunesAPI.searchPodcasts(term, limit).results;
     }
     // Lookup a single Podcast Artist
-    suspend fun lookupPodcast(id: String) : ITunesAPI.PodcastFeed {
+    suspend fun lookupPodcast(id: String) : ITunesAPI.Podcast {
         return iTunesAPI.lookupPodcast(id).results[0];
     }
 

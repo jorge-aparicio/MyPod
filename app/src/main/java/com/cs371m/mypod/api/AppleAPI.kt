@@ -12,7 +12,7 @@ interface AppleAPI
                           val name:String,
                           var artworkUrl100: String,
                           )
-    @GET("api/v2/us/podcasts/top/25/podcasts.json")
+    @GET("api/v2/us/podcasts/top/10/podcasts.json")
     suspend fun getTopPodcasts() : TopPodcastFeed;
 
     /**

@@ -47,11 +47,24 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
         rowBinding.episodeTitle.text = episode.episodeName;
         if (episode.artworkUrl != null)
             Glide.glideFetch(episode.artworkUrl, episode.artworkUrl, rowBinding.episodeImage)
-        val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z")
-        val datetime: LocalDateTime = LocalDateTime.parse(episode.pubDate, formatter)
-        rowBinding.episodeTime.text = episode.duration
-        rowBinding.episodeDate.text = datetime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
 
+        rowBinding.episodeTime.text = episode.duration
+        rowBinding.episodeDate.text = parseDate(episode.pubDate)
+
+    }
+
+    private fun parseDate(pubDate: String??):String{
+        if(pubDate == null) return ""
+        try{
+            val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z")
+            val datetime: LocalDateTime = LocalDateTime.parse(pubDate, formatter)
+            return datetime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+        }
+        catch(e: Exception){
+            val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss z")
+            val datetime: LocalDateTime = LocalDateTime.parse(pubDate, formatter)
+            return datetime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+        }
     }
 
 }
