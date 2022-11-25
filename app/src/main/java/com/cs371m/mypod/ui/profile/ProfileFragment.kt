@@ -48,7 +48,6 @@ class ProfileFragment : Fragment() {
         val adapter = EpisodeRowAdapter(viewModel);
         binding.episodeList.adapter = adapter
         binding.episodeList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        var originalPod: PodcastDao.Podcast? = null
 
         viewModel.observePodcastProfile().observe(viewLifecycleOwner){ it:PodcastDao.Podcast ->
             if(it.subscribed){
@@ -66,14 +65,14 @@ class ProfileFragment : Fragment() {
                 Glide.glideFetch(it.imageUrl, it.imageUrl, binding.podcastImage)
         }
         binding.subscribeButton.setOnClickListener() {
-                val podcast = if (binding.subscribeButton.text == "Subscribe") {
+                if (binding.subscribeButton.text == "Subscribe") {
                     binding.subscribeButton.text = "Unsubscribe"
 
                 } else {
                     binding.subscribeButton.text = "Subscribe"
 
                 }
-//                viewModel.toggleSubscribed()
+                viewModel.toggleSubscribed()
             }
 
 

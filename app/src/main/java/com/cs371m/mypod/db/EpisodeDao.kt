@@ -39,7 +39,7 @@ interface EpisodeDao {
     fun getEpisodeById(id: String): LiveData<Episode>
 
     @Query("SELECT * FROM episodes WHERE podcast_id = :podcastId ORDER BY episode_number DESC")
-    fun loadEpisodesByPodcastId(podcastId: Int): LiveData<List<Episode>>
+    fun loadEpisodesByPodcastId(podcastId: Int): List<Episode>
 
     @Query("SELECT a.*\n" +
             "FROM episodes a\n" +

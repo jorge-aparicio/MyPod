@@ -55,7 +55,7 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
 
 
         else{
-            val imageUrl = viewModel.getDb().loadPodcastById(episode.podcastId).value?.imageUrl
+            val imageUrl = viewModel.getDb().getPodcast(episode.podcastId)?.imageUrl
             if(imageUrl != null) {
                 Glide.glideFetch(imageUrl, imageUrl, rowBinding.episodeImage)
                 rowBinding.episodeImage.visibility = VISIBLE

@@ -98,12 +98,15 @@ AndroidViewModel(application) {
     ) {
 
         // Get Podcast Data
-        val dbPodcast = myPodDbRepo.loadPodcastById(id).value
-        if(dbPodcast != null){
-            var eps = myPodDbRepo.loadEpisodesByPodcastId(id).value
-            podcastProfile.postValue(dbPodcast!!)
-            profileEpisodes.postValue(eps!!)
-        }
+        //
+        val dbPodcast = myPodDbRepo.getPodcast(id)
+        val subscribed =  if(dbPodcast != null){
+                println("!!!LOADING FROM DB!!!")
+                var eps = myPodDbRepo.loadEpisodesByPodcastId(id)
+                podcastProfile.postValue(dbPodcast!!)
+                profileEpisodes.postValue(eps!!)
+                dbPodcast.subscribed
+                } else false
             val podcast = myPodRepo.lookupPodcast(id.toString())
             val feedUrl = podcast.feedUrl!!
             val imageUrl = podcast.artworkUrl100
@@ -118,7 +121,8 @@ AndroidViewModel(application) {
                     imageUrl,
                     feedUrl,
                     channel.description!!,
-                    channel.items!!.size
+                    channel.items!!.size,
+                        subscribed
                     )
                     podcastProfile.postValue(
                         newPod
@@ -265,6 +269,24 @@ AndroidViewModel(application) {
 
     fun getDb():MyPodDbRepo{
         return myPodDbRepo!!
+    }
+    fun toggleSubscribed()= viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO
+    ) {
+        val originalPod = podcastProfile.value!!
+        val newPod = PodcastDao.Podcast(
+            originalPod!!.id,
+            originalPod!!.title,
+            originalPod!!.imageUrl,
+            originalPod!!.feedUrl,
+            originalPod!!.description,
+            originalPod!!.numEpisodes,
+            !originalPod!!.subscribed
+        )
+//        podcastProfile.postValue(newPod)
+        myPodDbRepo.updatePodcast(newPod)
+        podcastProfile.postValue(newPod)
     }
     // This method converts time in milliseconds to minutes-second formatted string
     private fun convertTime(duration: String?): String {
