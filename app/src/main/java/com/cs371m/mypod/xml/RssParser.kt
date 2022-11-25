@@ -155,7 +155,6 @@ class RssParser {
                 "itunes:duration" -> duration = readDuration(parser)
                 "pubDate" -> pubDate = readPubDate(parser)
                 "itunes:image" -> image = readItunesImage(parser)
-                "guid" -> guid = readGUID(parser)
                 else -> skip(parser)
             }
         }
@@ -186,13 +185,7 @@ class RssParser {
         parser.require(XmlPullParser.END_TAG, ns, "itunes:episode")
         return pubDate
     }
-    @Throws(IOException::class, XmlPullParserException::class)
-    private fun readGUID(parser: XmlPullParser): String {
-        parser.require(XmlPullParser.START_TAG, ns, "guid")
-        val guid = readText(parser)
-        parser.require(XmlPullParser.END_TAG, ns, "guid")
-        return guid
-    }
+
     @Throws(IOException::class, XmlPullParserException::class)
     private fun readItunesImage(parser: XmlPullParser): String {
         var link = ""

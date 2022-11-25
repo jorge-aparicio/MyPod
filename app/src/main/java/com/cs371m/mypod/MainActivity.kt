@@ -10,7 +10,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.room.Room
 import com.cs371m.mypod.databinding.ActivityMainBinding
+import com.cs371m.mypod.db.MyPodDatabase
 import com.cs371m.mypod.ui.MainViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -22,7 +24,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val db = Room.databaseBuilder(
+            applicationContext,
+            MyPodDatabase::class.java, "mypod"
+        ).build()
+        viewModel.setDb(db)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

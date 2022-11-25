@@ -6,9 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.room.Room
 import com.cs371m.mypod.api.AppleAPI
 import com.cs371m.mypod.api.ITunesAPI
 import com.cs371m.mypod.api.MyPodRepo
+import com.cs371m.mypod.db.MyPodDatabase
 import com.cs371m.mypod.models.PodcastTypes
 import com.cs371m.mypod.xml.FeedDownloader
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -41,6 +43,9 @@ class MainViewModel : ViewModel() {
     private val profileEpisodes = MutableLiveData<List<PodcastTypes.PodcastEpisode>>();
     private val lastEpisodeIndex = MutableLiveData(15);
     private val episodeIncrement = 15;
+
+    private var db: MyPodDatabase? = null;
+
 
     fun getTop25() {
         viewModelScope.launch(
@@ -118,7 +123,7 @@ class MainViewModel : ViewModel() {
             )
             val channelEps = channel.items
             lastEpisodeIndex.postValue(15);
-            val episodes = channelEps!!.filter{article -> article.audioUrl != null}.map { article ->
+            val episodes = channelEps!!.filter{article -> article.audioUrl != null}.mapIndexed { index,article ->
                  val uuidString= article.title!! + channel.title
                 val uuid = UUID.nameUUIDFromBytes(uuidString.toByteArray());
                 PodcastTypes.PodcastEpisode(
@@ -127,7 +132,8 @@ class MainViewModel : ViewModel() {
                     article.audioUrl!!,
                     article.image,
                     article.pubDate,
-                    convertTime(article.duration)
+                    convertTime(article.duration),
+                    channel.items.size - index
                 )
             }.toList()
             if (episodes.isNotEmpty()) {
@@ -254,6 +260,14 @@ class MainViewModel : ViewModel() {
     }
     fun getNavController():NavController{
         return navController!!
+    }
+
+    fun setDb(database:MyPodDatabase){
+        db = database
+    }
+
+    fun getDb():MyPodDatabase{
+        return db!!
     }
     // This method converts time in milliseconds to minutes-second formatted string
     private fun convertTime(duration: String?): String {

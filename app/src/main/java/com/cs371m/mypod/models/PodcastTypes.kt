@@ -22,6 +22,7 @@ interface PodcastTypes {
                               val audioUrl: String,
                               val artworkUrl: String?,
                               val pubDate: String?,
-                              val duration: String?
+                              val duration: String?,
+                              val number: Int?
                               )
 }
