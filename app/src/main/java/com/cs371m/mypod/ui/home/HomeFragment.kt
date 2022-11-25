@@ -54,36 +54,20 @@ class HomeFragment : Fragment() {
         testEpisodes.add("626605826");
         viewModel.setContinueList(testEpisodes);
 
-        val testInputs = mutableListOf<String>();
-        testInputs.add("1151551839");
-        testInputs.add("1482427275");
-        testInputs.add("1230146263");
-        testInputs.add("456058945");
-        testInputs.add("140064169");
-        testInputs.add("729430130");
-        testInputs.add("729430126");
-        viewModel.setSubscriptionList(testInputs)
         // ########### TEST ###########
 
         // TODO: Need to get subscriptions & continue listening lists from a database
 
         // Set up adapters
-        val subAdapter = SubscriptionsAdaper(viewModel);
-        binding.subsList.adapter = subAdapter;
-        binding.subsList.layoutManager = GridLayoutManager(this.context, 4)
+
         val continueAdapter = ContinueAdapter(viewModel);
         binding.continueList.adapter = continueAdapter;
         binding.continueList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false);
 
         // Subscription List Observers
         viewModel.observeSubscriptionList().observe(viewLifecycleOwner) {
-            viewModel.processSubscriptionList();
         }
-        viewModel.observeSubscriptionListData().observe(viewLifecycleOwner) {
-            Log.d("#################################################", "Subscription List Changed (Size: ${it.size})")
-            subAdapter.submitList(it);
-            subAdapter.notifyDataSetChanged();
-        }
+
 
         // Continue Listening List Observers
         viewModel.observeContinueList().observe(viewLifecycleOwner) {

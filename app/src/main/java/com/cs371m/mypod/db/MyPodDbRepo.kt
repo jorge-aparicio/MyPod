@@ -17,7 +17,11 @@ class MyPodDbRepo(private val db:MyPodDatabase) {
         db.podcastDao().deletePodcast(podcast)
     }
 
-    fun loadPodcastById(id: String): LiveData<PodcastDao.Podcast>{
+    fun getPodcast(id:Int): PodcastDao.Podcast{
+        return db.podcastDao().getPodcast(id)
+    }
+
+    fun loadPodcastById(id: Int): LiveData<PodcastDao.Podcast>{
         return db.podcastDao().loadPodcastById(id)
     }
 
@@ -41,7 +45,7 @@ class MyPodDbRepo(private val db:MyPodDatabase) {
         return db.episodeDao().getEpisodeById(id)
     }
 
-    fun loadEpisodesByPodcastId(podcastId: String): LiveData<List<EpisodeDao.Episode>>{
+    fun loadEpisodesByPodcastId(podcastId: Int): LiveData<List<EpisodeDao.Episode>>{
         return db.episodeDao().loadEpisodesByPodcastId(podcastId)
     }
 

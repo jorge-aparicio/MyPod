@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.cs371m.mypod.databinding.FragmentSubsBinding
 import com.cs371m.mypod.ui.MainViewModel
-import com.cs371m.mypod.ui.home.SubscriptionsAdaper
 
 class SubscriptionsFragment : Fragment() {
 
@@ -40,9 +39,10 @@ class SubscriptionsFragment : Fragment() {
 
         // Subscription List Observers
         viewModel.observeSubscriptionList().observe(viewLifecycleOwner) {
-            viewModel.processSubscriptionList();
+            subAdapter.submitList(it)
+
         }
-        viewModel.observeSubscriptionListData().observe(viewLifecycleOwner) {
+        viewModel.observeSubscriptionList().observe(viewLifecycleOwner) {
             Log.d("#################################################", "Subscription List Changed (Size: ${it.size})")
             subAdapter.submitList(it);
             subAdapter.notifyDataSetChanged();

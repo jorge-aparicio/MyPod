@@ -1,25 +1,26 @@
-package com.cs371m.mypod.ui.home
+package com.cs371m.mypod.ui.subscriptions
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.cs371m.mypod.api.ITunesAPI
+import com.cs371m.mypod.R
+import com.cs371m.mypod.db.PodcastDao
 import com.cs371m.mypod.databinding.PodTileBinding
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
 
 class SubscriptionsAdaper(private val viewModel: MainViewModel)
-    : ListAdapter<ITunesAPI.Podcast, SubscriptionsAdaper.VH>(PodcastDiff()) {
+    : ListAdapter<PodcastDao.Podcast, SubscriptionsAdaper.VH>(PodcastDiff()) {
 
-    class PodcastDiff : DiffUtil.ItemCallback<ITunesAPI.Podcast>() {
-        override fun areItemsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
-            return (oldItem.collectionId == newItem.collectionId) && (oldItem.collectionName == newItem.collectionName);
+    class PodcastDiff : DiffUtil.ItemCallback<PodcastDao.Podcast>() {
+        override fun areItemsTheSame(oldItem: PodcastDao.Podcast, newItem: PodcastDao.Podcast): Boolean {
+            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title);
         }
 
-        override fun areContentsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
-            return (oldItem.collectionId == newItem.collectionId) && (oldItem.collectionName == newItem.collectionName);
+        override fun areContentsTheSame(oldItem: PodcastDao.Podcast, newItem: PodcastDao.Podcast): Boolean {
+            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title);
         }
 
     }
@@ -42,10 +43,14 @@ class SubscriptionsAdaper(private val viewModel: MainViewModel)
 
         // Set the title
         val podcast = getItem(holder.adapterPosition);
-        podTileBinding.tileTitle.text = podcast.collectionName;
+        podTileBinding.tileTitle.text = podcast.title;
 
+        podTileBinding.root.setOnClickListener(){
+            viewModel.setProfileId(podcast.id)
+            viewModel.getNavController().navigate(R.id.navigation_profile)
+        }
         // Set the image
-        Glide.glideFetch(podcast.artworkUrl100, podcast.artworkUrl100, podTileBinding.tileImage)
+        Glide.glideFetch(podcast.imageUrl!!, podcast.imageUrl!!, podTileBinding.tileImage)
     }
 
 }

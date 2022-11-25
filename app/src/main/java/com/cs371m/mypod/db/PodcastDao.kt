@@ -6,7 +6,7 @@ import androidx.room.*
 interface PodcastDao {
         @Entity(tableName = "podcasts")
         data class Podcast(
-                @PrimaryKey val id: String,
+                @PrimaryKey val id: Int,
                 @ColumnInfo(name = "title") val title: String,
                 @ColumnInfo(name = "image_url") val imageUrl: String?,
                 @ColumnInfo(name = "feed_url") val feedUrl:String,
@@ -26,7 +26,10 @@ interface PodcastDao {
         suspend fun deletePodcast(vararg podcast: Podcast)
 
         @Query("SELECT * FROM podcasts WHERE id = :id")
-        fun loadPodcastById(id: String): LiveData<Podcast>
+        fun getPodcast(id:Int):Podcast
+
+        @Query("SELECT * FROM podcasts WHERE id = :id")
+        fun loadPodcastById(id: Int): LiveData<Podcast>
 
         @Query("SELECT * FROM podcasts WHERE subscribed = 1")
         fun loadSubscriptions(): LiveData<List<Podcast>>

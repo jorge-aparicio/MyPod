@@ -19,7 +19,7 @@ interface EpisodeDao {
         @ColumnInfo(name = "image_url")val imageUrl: String?,
         @ColumnInfo(name = "pub_date")val pubDate: String?,
         @ColumnInfo(name = "duration")val duration: String?,
-        @ColumnInfo(name = "podcast_id")val podcastId : String,
+        @ColumnInfo(name = "podcast_id")val podcastId : Int,
         @ColumnInfo(name = "episode_number") val episodeNumber: Int,
         @ColumnInfo(name = "started")val started: Boolean = false,
         @ColumnInfo(name = "progress")val progress: Int = 0,
@@ -39,7 +39,7 @@ interface EpisodeDao {
     fun getEpisodeById(id: String): LiveData<Episode>
 
     @Query("SELECT * FROM episodes WHERE podcast_id = :podcastId ORDER BY episode_number DESC")
-    fun loadEpisodesByPodcastId(podcastId: String): LiveData<List<Episode>>
+    fun loadEpisodesByPodcastId(podcastId: Int): LiveData<List<Episode>>
 
     @Query("SELECT a.*\n" +
             "FROM episodes a\n" +

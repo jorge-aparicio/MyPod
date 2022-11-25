@@ -46,7 +46,7 @@ class PodcastArtistSearchAdapter(private val viewModel: MainViewModel)
         Glide.glideFetch(podcast.artworkUrl100, podcast.artworkUrl100, podRowBinding.rowImage)
 
         podRowBinding.root.setOnClickListener(){
-            viewModel.updateProfile(podcast.collectionId)
+            viewModel.setProfileId(podcast.collectionId.toInt())
             viewModel.getNavController().navigate(R.id.navigation_profile)
 
 

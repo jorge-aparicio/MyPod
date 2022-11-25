@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cs371m.mypod.databinding.FragmentPodProfileBinding
-import com.cs371m.mypod.databinding.FragmentSearchBinding
+import com.cs371m.mypod.db.PodcastDao
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
 import com.cs371m.mypod.ui.search.EpisodeRowAdapter
@@ -48,7 +48,16 @@ class ProfileFragment : Fragment() {
         val adapter = EpisodeRowAdapter(viewModel);
         binding.episodeList.adapter = adapter
         binding.episodeList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        viewModel.observePodcastProfile().observe(viewLifecycleOwner){
+        var originalPod: PodcastDao.Podcast? = null
+
+        viewModel.observePodcastProfile().observe(viewLifecycleOwner){ it:PodcastDao.Podcast ->
+            if(it.subscribed){
+                binding.subscribeButton.text = "Unsubscribe"
+            }else{
+                binding.subscribeButton.text = "Subscribe"
+            }
+
+
             binding.podcastTitle.text=it.title
             binding.podcastDescription.text = it.description
             binding.episodeDate.text = it.numEpisodes.toString() + " episodes"
@@ -56,9 +65,23 @@ class ProfileFragment : Fragment() {
             if (it.imageUrl != null)
                 Glide.glideFetch(it.imageUrl, it.imageUrl, binding.podcastImage)
         }
+        binding.subscribeButton.setOnClickListener() {
+                val podcast = if (binding.subscribeButton.text == "Subscribe") {
+                    binding.subscribeButton.text = "Unsubscribe"
+
+                } else {
+                    binding.subscribeButton.text = "Subscribe"
+
+                }
+                viewModel.toggleSubscribed()
+            }
+
+
+
         viewModel.observeProfileEpisodes().observe(viewLifecycleOwner){
             adapter.submitList(it)
         }
+
 
 
     }
