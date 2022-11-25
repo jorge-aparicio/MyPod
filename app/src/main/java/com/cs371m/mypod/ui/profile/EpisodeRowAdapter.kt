@@ -46,27 +46,37 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
 
         val episode = getItem(position);
         rowBinding.episodeTitle.text = episode.title;
+        rowBinding.episodeTime.text = episode.duration
+        rowBinding.episodeDate.text = parseDate(episode.pubDate)
         if (episode.imageUrl != null){
             rowBinding.episodeImage.visibility = VISIBLE
             Glide.glideFetch(episode.imageUrl, episode.imageUrl, rowBinding.episodeImage)
         }
-        else rowBinding.episodeImage.visibility = GONE
-        rowBinding.episodeTime.text = episode.duration
-        rowBinding.episodeDate.text = parseDate(episode.pubDate)
+
+
+        else{
+            val imageUrl = viewModel.getDb().loadPodcastById(episode.podcastId).value?.imageUrl
+            if(imageUrl != null) {
+                Glide.glideFetch(imageUrl, imageUrl, rowBinding.episodeImage)
+                rowBinding.episodeImage.visibility = VISIBLE
+
+            } else {
+                rowBinding.episodeImage.visibility = GONE
+            }
+        }
 
     }
 
     private fun parseDate(pubDate: String??):String{
         if(pubDate == null) return ""
-        try{
+        return try{
             val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z")
             val datetime: LocalDateTime = LocalDateTime.parse(pubDate, formatter)
-            return datetime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
-        }
-        catch(e: Exception){
+            datetime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+        } catch(e: Exception){
             val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss z")
             val datetime: LocalDateTime = LocalDateTime.parse(pubDate, formatter)
-            return datetime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
+            datetime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
         }
     }
 

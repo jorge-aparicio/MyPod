@@ -131,11 +131,12 @@ AndroidViewModel(application) {
                         .mapIndexed { index, article ->
                             val uuidString = article.title!! + channel.title
                             val uuid = UUID.nameUUIDFromBytes(uuidString.toByteArray());
+                            val image = article.image ?: imageUrl
                             EpisodeDao.Episode(
                                 uuid.toString(),
                                 article.title!!,
                                 article.audioUrl!!,
-                                article.image,
+                                image,
                                 article.pubDate,
                                 convertTime(article.duration),
                                 id,
@@ -269,8 +270,8 @@ AndroidViewModel(application) {
         return navController!!
     }
 
-    fun getDb():MyPodDatabase{
-        return db!!
+    fun getDb():MyPodDbRepo{
+        return myPodDbRepo!!
     }
     // This method converts time in milliseconds to minutes-second formatted string
     private fun convertTime(duration: String?): String {
