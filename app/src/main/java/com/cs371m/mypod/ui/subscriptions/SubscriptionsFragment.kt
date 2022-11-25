@@ -39,10 +39,6 @@ class SubscriptionsFragment : Fragment() {
 
         // Subscription List Observers
         viewModel.observeSubscriptionList().observe(viewLifecycleOwner) {
-            subAdapter.submitList(it)
-
-        }
-        viewModel.observeSubscriptionList().observe(viewLifecycleOwner) {
             Log.d("#################################################", "Subscription List Changed (Size: ${it.size})")
             subAdapter.submitList(it);
             subAdapter.notifyDataSetChanged();

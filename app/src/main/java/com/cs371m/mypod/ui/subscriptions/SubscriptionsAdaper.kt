@@ -37,7 +37,6 @@ class SubscriptionsAdaper(private val viewModel: MainViewModel)
         return holder;
     }
 
-    // TODO: Get image, title, etc
     override fun onBindViewHolder(holder: VH, position: Int) {
         val podTileBinding = holder.podTileBinding;
 
@@ -46,7 +45,7 @@ class SubscriptionsAdaper(private val viewModel: MainViewModel)
         podTileBinding.tileTitle.text = podcast.title;
 
         podTileBinding.root.setOnClickListener(){
-            viewModel.setProfileId(podcast.id)
+            viewModel.updateProfile(podcast.id)
             viewModel.getNavController().navigate(R.id.navigation_profile)
         }
         // Set the image

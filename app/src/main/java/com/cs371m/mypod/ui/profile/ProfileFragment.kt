@@ -73,7 +73,7 @@ class ProfileFragment : Fragment() {
                     binding.subscribeButton.text = "Subscribe"
 
                 }
-                viewModel.toggleSubscribed()
+//                viewModel.toggleSubscribed()
             }
 
 

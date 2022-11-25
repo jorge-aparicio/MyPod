@@ -34,8 +34,6 @@ AndroidViewModel(application) {
     private val podcastSearchResults = MutableLiveData<List<ITunesAPI.Podcast>>()
 
     // Subscriptions and Continue Listening Lists
-    private val subscriptionList = MutableLiveData<List<String>>();
-    private val subscriptionListData = MutableLiveData<List<ITunesAPI.Podcast>>();
     private val continueList = MutableLiveData<List<String>>();
     private val continueListListData = MutableLiveData<List<ITunesAPI.Podcast>>();
 
@@ -94,7 +92,7 @@ AndroidViewModel(application) {
         }
     }
 
-    fun updateProfile(id: String) = viewModelScope.launch(
+    fun updateProfile(id: Int) = viewModelScope.launch(
         context = viewModelScope.coroutineContext
                 + Dispatchers.IO
     ) {
@@ -106,7 +104,7 @@ AndroidViewModel(application) {
             podcastProfile.postValue(dbPodcast!!)
             profileEpisodes.postValue(eps!!)
         }
-            val podcast = myPodRepo.lookupPodcast(id)
+            val podcast = myPodRepo.lookupPodcast(id.toString())
             val feedUrl = podcast.feedUrl!!
             val imageUrl = podcast.artworkUrl100
             withContext(Dispatchers.Default) {
@@ -241,8 +239,7 @@ AndroidViewModel(application) {
     // Observers
     fun observePodcastArtistSearchResults(): LiveData<List<ITunesAPI.Podcast>> {return podcastSearchResults};
 //    fun observeEpisodeSearchResults(): LiveData<List<ITunesAPI.Episode>> {return episodeSearchResults};
-    fun observeSubscriptionList(): LiveData<List<String>> {return subscriptionList};
-    fun observeSubscriptionListData(): LiveData<List<ITunesAPI.Podcast>> {return subscriptionListData};
+    fun observeSubscriptionList(): LiveData<List<PodcastDao.Podcast>> {return myPodDbRepo.loadSubscriptions()};
     fun observeContinueList(): LiveData<List<String>> {return continueList};
     fun observeContinueListData(): LiveData<List<ITunesAPI.Podcast>> {return continueListListData};
 
@@ -254,10 +251,6 @@ AndroidViewModel(application) {
         return profileEpisodes
     }
 
-    // Setters
-    fun setSubscriptionList(list: List<String>) {
-        subscriptionList.postValue(list);
-    }
     fun setContinueList(list: List<String>) {
         continueList.postValue(list);
     }
