@@ -26,7 +26,7 @@ interface PodcastDao {
         suspend fun deletePodcast(vararg podcast: Podcast)
 
         @Query("SELECT * FROM podcasts WHERE id = :id")
-        fun loadPodcastById(id: Int): LiveData<Podcast>
+        fun loadPodcastById(id: String): LiveData<Podcast>
 
         @Query("SELECT * FROM podcasts WHERE subscribed = 1")
         fun loadSubscriptions(): LiveData<List<Podcast>>

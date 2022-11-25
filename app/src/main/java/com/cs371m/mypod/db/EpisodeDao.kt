@@ -36,9 +36,9 @@ interface EpisodeDao {
     suspend fun deleteEpisode(vararg episode: Episode)
 
     @Query("SELECT * FROM episodes WHERE id = :id")
-    fun getEpisodeById(id: Int): LiveData<Episode>
+    fun getEpisodeById(id: String): LiveData<Episode>
 
-    @Query("SELECT * FROM episodes WHERE podcast_id = :podcastId")
+    @Query("SELECT * FROM episodes WHERE podcast_id = :podcastId ORDER BY episode_number DESC")
     fun loadEpisodesByPodcastId(podcastId: String): LiveData<List<Episode>>
 
     @Query("SELECT a.*\n" +

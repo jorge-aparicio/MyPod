@@ -7,22 +7,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.cs371m.mypod.databinding.ProfileRowBinding
+import com.cs371m.mypod.db.EpisodeDao
 import com.cs371m.mypod.glide.Glide
-import com.cs371m.mypod.models.PodcastTypes
 import com.cs371m.mypod.ui.MainViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class EpisodeRowAdapter(private val viewModel: MainViewModel)
-    : ListAdapter<PodcastTypes.PodcastEpisode, EpisodeRowAdapter.VH>(PodcastDiff()) {
+    : ListAdapter<EpisodeDao.Episode, EpisodeRowAdapter.VH>(PodcastDiff()) {
 
-    class PodcastDiff : DiffUtil.ItemCallback<PodcastTypes.PodcastEpisode>() {
-        override fun areItemsTheSame(oldItem: PodcastTypes.PodcastEpisode, newItem: PodcastTypes.PodcastEpisode): Boolean {
+    class PodcastDiff : DiffUtil.ItemCallback<EpisodeDao.Episode>() {
+        override fun areItemsTheSame(oldItem: EpisodeDao.Episode, newItem: EpisodeDao.Episode): Boolean {
             return oldItem.id == newItem.id;
         }
 
-        override fun areContentsTheSame(oldItem: PodcastTypes.PodcastEpisode, newItem: PodcastTypes.PodcastEpisode): Boolean {
-            return oldItem.episodeName == newItem.episodeName;
+        override fun areContentsTheSame(oldItem: EpisodeDao.Episode, newItem: EpisodeDao.Episode): Boolean {
+            return oldItem.title == newItem.title;
         }
 
     }
@@ -45,10 +45,10 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
         val rowBinding = holder.rowBinding;
 
         val episode = getItem(position);
-        rowBinding.episodeTitle.text = episode.episodeName;
-        if (episode.artworkUrl != null){
+        rowBinding.episodeTitle.text = episode.title;
+        if (episode.imageUrl != null){
             rowBinding.episodeImage.visibility = VISIBLE
-            Glide.glideFetch(episode.artworkUrl, episode.artworkUrl, rowBinding.episodeImage)
+            Glide.glideFetch(episode.imageUrl, episode.imageUrl, rowBinding.episodeImage)
         }
         else rowBinding.episodeImage.visibility = GONE
         rowBinding.episodeTime.text = episode.duration

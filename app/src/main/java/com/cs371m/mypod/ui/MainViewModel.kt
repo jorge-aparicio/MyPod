@@ -1,17 +1,16 @@
 package com.cs371m.mypod.ui
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.navigation.NavController
-import androidx.room.Room
 import com.cs371m.mypod.api.AppleAPI
 import com.cs371m.mypod.api.ITunesAPI
 import com.cs371m.mypod.api.MyPodRepo
+import com.cs371m.mypod.db.EpisodeDao
 import com.cs371m.mypod.db.MyPodDatabase
-import com.cs371m.mypod.models.PodcastTypes
+import com.cs371m.mypod.db.MyPodDbRepo
+import com.cs371m.mypod.db.PodcastDao
 import com.cs371m.mypod.xml.FeedDownloader
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class MainViewModel : ViewModel() {
+class MainViewModel(
+    application: Application):
+AndroidViewModel(application) {
 
     // Dunno what this does
     private var navController: NavController? = null;
@@ -39,13 +40,11 @@ class MainViewModel : ViewModel() {
     private val continueListListData = MutableLiveData<List<ITunesAPI.Podcast>>();
 
     //
-    private val podcastProfile = MutableLiveData<PodcastTypes.PodcastProfile>();
-    private val profileEpisodes = MutableLiveData<List<PodcastTypes.PodcastEpisode>>();
+    private val podcastProfile = MutableLiveData<PodcastDao.Podcast>();
+    private val profileEpisodes = MutableLiveData<List<EpisodeDao.Episode>>();
     private val lastEpisodeIndex = MutableLiveData(15);
-    private val episodeIncrement = 15;
-
-    private var db: MyPodDatabase? = null;
-
+    private var db: MyPodDatabase = MyPodDatabase.getDatabase(getApplication<Application>().applicationContext);
+    private val myPodDbRepo = MyPodDbRepo(db)
 
     fun getTop25() {
         viewModelScope.launch(
@@ -101,47 +100,55 @@ class MainViewModel : ViewModel() {
     ) {
 
         // Get Podcast Data
-        val podcast = myPodRepo.lookupPodcast(id)
-        val feedUrl = podcast.feedUrl!!
-        val imageUrl = podcast.artworkUrl100
-//        val channel = myPodRepo.getChannel(feedUrl)
-        withContext(Dispatchers.Default) {
-            val channel = FeedDownloader().loadXmlFromNetwork(feedUrl)[0]
-            println(channel)
+        val dbPodcast = myPodDbRepo.loadPodcastById(id).value
+        if(dbPodcast != null){
+            var eps = myPodDbRepo.loadEpisodesByPodcastId(id).value
+            podcastProfile.postValue(dbPodcast!!)
+            profileEpisodes.postValue(eps!!)
+        }
+            val podcast = myPodRepo.lookupPodcast(id)
+            val feedUrl = podcast.feedUrl!!
+            val imageUrl = podcast.artworkUrl100
+            withContext(Dispatchers.Default) {
+                val channel = FeedDownloader().loadXmlFromNetwork(feedUrl)[0]
 
-            // set profile podcast
-            println(channel)
-            if (channel != null) podcastProfile.postValue(
-                PodcastTypes.PodcastProfile(
-                    id,
+                // set profile podcast
+                if (channel != null) {
+                    val newPod =  PodcastDao.Podcast(
+                            id,
                     podcast.collectionName,
                     imageUrl,
                     feedUrl,
                     channel.description!!,
                     channel.items!!.size
-                )
-            )
-            val channelEps = channel.items
-            lastEpisodeIndex.postValue(15);
-            val episodes = channelEps!!.filter{article -> article.audioUrl != null}.mapIndexed { index,article ->
-                 val uuidString= article.title!! + channel.title
-                val uuid = UUID.nameUUIDFromBytes(uuidString.toByteArray());
-                PodcastTypes.PodcastEpisode(
-                    uuid.toString(),
-                    article.title!!,
-                    article.audioUrl!!,
-                    article.image,
-                    article.pubDate,
-                    convertTime(article.duration),
-                    channel.items.size - index
-                )
-            }.toList()
-            if (episodes.isNotEmpty()) {
-                profileEpisodes.postValue(episodes)
-            }
+                    )
+                    podcastProfile.postValue(
+                        newPod
+                    )
+                    myPodDbRepo.insertPodcast(newPod)
+                    val channelEps = channel.items
+                    val episodes = channelEps!!.filter { article -> article.audioUrl != null }
+                        .mapIndexed { index, article ->
+                            val uuidString = article.title!! + channel.title
+                            val uuid = UUID.nameUUIDFromBytes(uuidString.toByteArray());
+                            EpisodeDao.Episode(
+                                uuid.toString(),
+                                article.title!!,
+                                article.audioUrl!!,
+                                article.image,
+                                article.pubDate,
+                                convertTime(article.duration),
+                                id,
+                                channel.items.size - index
+                            )
+                        }.toList()
+                    if (episodes.isNotEmpty()) {
+                        profileEpisodes.postValue(episodes)
+                        episodes.forEach { episode -> myPodDbRepo.insertEpisode(episode) }
 
+                    }
+                }
         }
-
     }
 
 //    fun getMoreEpisodes(feed: String, inc: Int) = viewModelScope.launch(
@@ -239,10 +246,10 @@ class MainViewModel : ViewModel() {
     fun observeContinueListData(): LiveData<List<ITunesAPI.Podcast>> {return continueListListData};
 
     //
-    fun observePodcastProfile():MutableLiveData<PodcastTypes.PodcastProfile>{
+    fun observePodcastProfile():MutableLiveData<PodcastDao.Podcast>{
         return podcastProfile
     }
-    fun observeProfileEpisodes():MutableLiveData<List<PodcastTypes.PodcastEpisode>>{
+    fun observeProfileEpisodes():MutableLiveData<List<EpisodeDao.Episode>>{
         return profileEpisodes
     }
 
@@ -260,10 +267,6 @@ class MainViewModel : ViewModel() {
     }
     fun getNavController():NavController{
         return navController!!
-    }
-
-    fun setDb(database:MyPodDatabase){
-        db = database
     }
 
     fun getDb():MyPodDatabase{

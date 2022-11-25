@@ -49,12 +49,12 @@ class ProfileFragment : Fragment() {
         binding.episodeList.adapter = adapter
         binding.episodeList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         viewModel.observePodcastProfile().observe(viewLifecycleOwner){
-            binding.podcastTitle.text=it.collectionName
+            binding.podcastTitle.text=it.title
             binding.podcastDescription.text = it.description
             binding.episodeDate.text = it.numEpisodes.toString() + " episodes"
 
-            if (it.artworkUrl100 != null)
-                Glide.glideFetch(it.artworkUrl100, it.artworkUrl100, binding.podcastImage)
+            if (it.imageUrl != null)
+                Glide.glideFetch(it.imageUrl, it.imageUrl, binding.podcastImage)
         }
         viewModel.observeProfileEpisodes().observe(viewLifecycleOwner){
             adapter.submitList(it)

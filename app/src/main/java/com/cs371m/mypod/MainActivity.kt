@@ -24,11 +24,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val db = Room.databaseBuilder(
-            applicationContext,
-            MyPodDatabase::class.java, "mypod"
-        ).build()
-        viewModel.setDb(db)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
