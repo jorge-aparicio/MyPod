@@ -38,8 +38,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        registerForContextMenu(binding.continueList)
-        registerForContextMenu(binding.newEpsList)
+
         // Set up adaptersegisterForContextMenu(
         continueAdapter = ContinueAdapter(viewModel)
         binding.continueList.adapter = continueAdapter
@@ -48,7 +47,8 @@ class HomeFragment : Fragment() {
         newEpisodesAdapter = NewEpisodesAdapter(viewModel)
         binding.newEpsList.adapter = newEpisodesAdapter
         binding.newEpsList.layoutManager = GridLayoutManager(this.context, 4)
-
+        registerForContextMenu(binding.continueList)
+        registerForContextMenu(binding.newEpsList)
         // Subscription List Observers
         viewModel.observeNewEpsList().observe(viewLifecycleOwner) {
         newEpisodesAdapter.submitList(it)
@@ -83,6 +83,9 @@ class HomeFragment : Fragment() {
         when (item.itemId) {
             R.id.menu_play -> {
                 println("Playing ")
+            }
+            R.id.menu_mark_played ->{
+                println("Marking Played")
             }
             R.id.menu_download->{
                 println("Downloading")
