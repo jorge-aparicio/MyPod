@@ -46,6 +46,10 @@ class NewEpisodesAdapter(private val viewModel: MainViewModel)
 
         // Set the image
         Glide.glideFetch(episode.imageUrl!!, episode.imageUrl!!, podTileBinding.tileImage)
+
+        podTileBinding.root.setOnClickListener(){
+            viewModel.setStarted(episode.id,true)
+        }
     }
 
 }

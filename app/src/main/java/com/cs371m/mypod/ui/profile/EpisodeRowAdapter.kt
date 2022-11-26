@@ -65,9 +65,13 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
             }
         }
 
+        rowBinding.root.setOnClickListener(){
+            viewModel.setStarted(episode.id,true)
+        }
+
     }
 
-    private fun parseDate(pubDate: String??):String{
+    private fun parseDate(pubDate: String?):String{
         if(pubDate == null) return ""
         return try{
             val formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z")
