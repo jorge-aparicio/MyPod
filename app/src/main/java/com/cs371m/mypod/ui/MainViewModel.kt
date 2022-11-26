@@ -175,7 +175,6 @@ class MainViewModel(
         return myPodDbRepo.getLatestEpisodes()
     }
 
-
     fun observePodcastProfile(): MutableLiveData<PodcastDao.Podcast> {
         return podcastProfile
     }
@@ -236,6 +235,73 @@ class MainViewModel(
             }
         }
         return "??:??:??"
+    }
+
+   // episode mod functions
+   fun setStarted(id:String,started:Boolean) = viewModelScope.launch(
+       context = viewModelScope.coroutineContext
+               + Dispatchers.IO
+   ) {
+       val originalEp = myPodDbRepo.getEpisodeById(id)
+       val newEp = EpisodeDao.Episode(
+           originalEp.id,
+           originalEp.title,
+           originalEp.audioUrl,
+           originalEp.imageUrl!!,
+           originalEp.pubDate,
+           originalEp.duration,
+           originalEp.podcastId,
+           originalEp.episodeNumber,
+           started,
+           originalEp.progress,
+           originalEp.played
+       )
+       myPodDbRepo.updateEpisode(newEp)
+
+   }
+
+    fun setPlayed(id:String,played:Boolean) = viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO
+    ) {
+        val originalEp = myPodDbRepo.getEpisodeById(id)
+        val newEp = EpisodeDao.Episode(
+            originalEp.id,
+            originalEp.title,
+            originalEp.audioUrl,
+            originalEp.imageUrl!!,
+            originalEp.pubDate,
+            originalEp.duration,
+            originalEp.podcastId,
+            originalEp.episodeNumber,
+            originalEp.started,
+            originalEp.progress,
+            played
+        )
+        myPodDbRepo.updateEpisode(newEp)
+
+    }
+
+    fun setProgress(id:String,progress:Int) = viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO
+    ) {
+        val originalEp = myPodDbRepo.getEpisodeById(id)
+        val newEp = EpisodeDao.Episode(
+            originalEp.id,
+            originalEp.title,
+            originalEp.audioUrl,
+            originalEp.imageUrl!!,
+            originalEp.pubDate,
+            originalEp.duration,
+            originalEp.podcastId,
+            originalEp.episodeNumber,
+            originalEp.started,
+            progress,
+            originalEp.played
+        )
+        myPodDbRepo.updateEpisode(newEp)
+
     }
 
 }

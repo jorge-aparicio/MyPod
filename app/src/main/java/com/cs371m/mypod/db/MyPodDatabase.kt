@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [PodcastDao.Podcast::class, EpisodeDao.Episode::class], version = 1)
+@Database(entities = [PodcastDao.Podcast::class, EpisodeDao.Episode::class, EpisodeDao.EpisodeDownload::class], version = 1)
 abstract class MyPodDatabase: RoomDatabase() {
     abstract fun podcastDao(): PodcastDao
     abstract fun episodeDao(): EpisodeDao

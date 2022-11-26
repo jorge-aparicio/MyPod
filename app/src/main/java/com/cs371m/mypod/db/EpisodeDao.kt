@@ -36,7 +36,7 @@ interface EpisodeDao {
     suspend fun deleteEpisode(vararg episode: Episode)
 
     @Query("SELECT * FROM episodes WHERE id = :id")
-    fun getEpisodeById(id: String): LiveData<Episode>
+    fun getEpisodeById(id: String): Episode
 
     @Query("SELECT * FROM episodes WHERE podcast_id = :podcastId ORDER BY episode_number DESC")
     fun loadEpisodesByPodcastId(podcastId: Int): List<Episode>
@@ -56,4 +56,45 @@ interface EpisodeDao {
 
     @Query("SELECT * FROM episodes WHERE started = 1 AND played = 0 LIMIT 8")
     fun getUnfinished():LiveData<List<Episode>>
+
+
+    @Entity(tableName = "episode_downloads",
+        foreignKeys = [
+            ForeignKey(entity = Episode::class,
+                parentColumns = ["id"],
+                childColumns = ["id"],
+                onDelete = ForeignKey.CASCADE
+            )])
+    data class EpisodeDownload(
+        @PrimaryKey val id:String,
+        @ColumnInfo(name = "audio_data",typeAffinity = ColumnInfo.BLOB)val audioData:ByteArray ,
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as EpisodeDownload
+
+            if (id != other.id) return false
+            if (!audioData.contentEquals(other.audioData)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = id.hashCode()
+            result = 31 * result + audioData.contentHashCode()
+            return result
+        }
+    }
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertEpisodeDownload(vararg episodeDownload: EpisodeDownload)
+
+    @Delete
+    suspend fun deleteEpisodeDownload(vararg episodeDownload: EpisodeDownload)
+
+    @Query("SELECT * FROM episode_downloads WHERE id = :id")
+    fun getEpisodeDownloadById(id: String): EpisodeDownload
+
 }

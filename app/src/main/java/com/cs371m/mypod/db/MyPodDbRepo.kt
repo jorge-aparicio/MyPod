@@ -37,7 +37,7 @@ class MyPodDbRepo(private val db:MyPodDatabase) {
         db.episodeDao().deleteEpisode(episode)
     }
 
-    fun getEpisodeById(id: String): LiveData<EpisodeDao.Episode>{
+    fun getEpisodeById(id: String): EpisodeDao.Episode{
         return db.episodeDao().getEpisodeById(id)
     }
 
@@ -52,5 +52,18 @@ class MyPodDbRepo(private val db:MyPodDatabase) {
 
     fun getUnfinished(): LiveData<List<EpisodeDao.Episode>>{
         return db.episodeDao().getUnfinished()
+    }
+
+
+    suspend fun insertEpisodeDownload(episodeDownload: EpisodeDao.EpisodeDownload){
+        db.episodeDao().insertEpisodeDownload(episodeDownload)
+    }
+
+    suspend fun deleteEpisodeDownload(episodeDownload: EpisodeDao.EpisodeDownload){
+        db.episodeDao().deleteEpisodeDownload(episodeDownload)
+    }
+
+    fun getEpisodeDownloadById(id: String): EpisodeDao.EpisodeDownload{
+        return db.episodeDao().getEpisodeDownloadById(id)
     }
 }
