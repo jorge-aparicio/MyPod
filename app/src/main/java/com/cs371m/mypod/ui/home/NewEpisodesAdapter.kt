@@ -1,6 +1,5 @@
 package com.cs371m.mypod.ui.home
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -11,8 +10,8 @@ import com.cs371m.mypod.db.EpisodeDao
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
 
-class ContinueAdapter(private val viewModel: MainViewModel)
-    : ListAdapter<EpisodeDao.Episode, ContinueAdapter.VH>(EpisodeDiff()) {
+class NewEpisodesAdapter(private val viewModel: MainViewModel)
+    : ListAdapter<EpisodeDao.Episode, NewEpisodesAdapter.VH>(EpisodeDiff()) {
 
     class EpisodeDiff : DiffUtil.ItemCallback<EpisodeDao.Episode>() {
         override fun areItemsTheSame(oldItem: EpisodeDao.Episode, newItem: EpisodeDao.Episode): Boolean {

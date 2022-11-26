@@ -47,8 +47,11 @@ interface EpisodeDao {
             "    SELECT id, MAX(episode_number) episode_number\n" +
             "    FROM episodes\n" +
             "    WHERE started = 0" +
-            "    GROUP BY id\n" +
-            ") b ON a.id = b.id AND a.episode_number = b.episode_number")
+            "    GROUP BY podcast_id\n" +
+            ") b ON a.id = b.id AND a.episode_number = b.episode_number\n"+
+            "INNER JOIN podcasts AS pod\n"+
+            "ON a.podcast_id = pod.id AND pod.subscribed = 1"
+    )
     fun getLatestEpisodes(): LiveData<List<Episode>>
 
     @Query("SELECT * FROM episodes WHERE started = 1 AND played = 0 LIMIT 8")

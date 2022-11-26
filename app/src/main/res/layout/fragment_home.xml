@@ -18,38 +18,28 @@
         android:textSize="40sp"
         android:textStyle="bold" />
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/homeContinueScroll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/continueList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:nestedScrollingEnabled="false"
-            android:orientation="horizontal" />
-    </androidx.core.widget.NestedScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/continueList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:nestedScrollingEnabled="false"
+        android:orientation="horizontal" />
 
     <TextView
-        android:id="@+id/homeSubsText"
+        android:id="@+id/newEpisodesText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:text="Subscriptions"
+        android:text="New Episodes"
         android:textColor="@color/mp_lightgrey"
         android:textSize="40sp"
         android:textStyle="bold" />
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/homeSubsScroll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/subsList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:nestedScrollingEnabled="false"
-            android:orientation="horizontal" />
-    </androidx.core.widget.NestedScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/newEpsList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:nestedScrollingEnabled="false"
+        android:orientation="horizontal" />
 
 </LinearLayout>
