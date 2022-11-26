@@ -30,19 +30,17 @@ AndroidViewModel(application) {
     private val appleAPI = AppleAPI.create();
     private val myPodRepo = MyPodRepo(iTunesAPI, appleAPI);
 
+    //db stuff
+    private var db: MyPodDatabase = MyPodDatabase.getDatabase(getApplication<Application>().applicationContext);
+    private val myPodDbRepo = MyPodDbRepo(db)
+
     // Search results
     private val podcastSearchResults = MutableLiveData<List<ITunesAPI.Podcast>>()
 
-    // Subscriptions and Continue Listening Lists
-    private val continueList = MutableLiveData<List<String>>();
-    private val continueListListData = MutableLiveData<List<ITunesAPI.Podcast>>();
-
-    //
+    // podcast profile
     private val podcastProfile = MutableLiveData<PodcastDao.Podcast>();
     private val profileEpisodes = MutableLiveData<List<EpisodeDao.Episode>>();
-    private val lastEpisodeIndex = MutableLiveData(15);
-    private var db: MyPodDatabase = MyPodDatabase.getDatabase(getApplication<Application>().applicationContext);
-    private val myPodDbRepo = MyPodDbRepo(db)
+
 
     fun getTop25() {
         viewModelScope.launch(
@@ -154,100 +152,14 @@ AndroidViewModel(application) {
         }
     }
 
-//    fun getMoreEpisodes(feed: String, inc: Int) = viewModelScope.launch(
-//        context = viewModelScope.coroutineContext
-//                + Dispatchers.IO
-//    ) {
-//        val channel = parser.getChannel(feed)
-//        val channelEps = channel.articles
-//        lastEpisodeIndex.postValue(lastEpisodeIndex.value!!+episodeIncrement);
-//        val episodes = channelEps.filterIndexed { index, _ ->
-//            if (index < lastEpisodeIndex.value!! && index > (lastEpisodeIndex.value!! - episodeIncrement)) true
-//            false
-//        }.map { article ->
-//            PodcastTypes.PodcastEpisode(
-//                article.guid!!,
-//                article.title!!,
-//                article.audio!!,
-//                article.image!!,
-//                article.pubDate!!
-//            )
-//        }.toList()
-//
-//        if (episodes.isNotEmpty()) {
-//            profileEpisodes.postValue(episodes)
-//        }
-//    }
-
-//    // Episode Search using a search term
-//    fun searchEpisodes(term: String, limit: Int) {
-//        viewModelScope.launch(
-//            context = viewModelScope.coroutineContext
-//                    + Dispatchers.IO
-//                    + CoroutineExceptionHandler{
-//                        _, throwable ->
-//                        Log.d("#################################################", "ERROR!!!!!!!!!!!!!!!!!!!!!!!: {$throwable.message}")
-//                        throwable.printStackTrace();
-//                    }
-//        ) {
-//            // Get search results
-//            val result = myPodRepo.searchEpisodes(term, limit);
-//            for (i in 0..(result.size - 1)) {
-//                if (result[i].artworkUrl600 == null) result[i].artworkUrl600 = "https://upload.wikimedia.org/wikipedia/commons/f/f1/Heavy_red_%22x%22.png";
-//            }
-//            episodeSearchResults.postValue(result);
-//        }
-//    }
-
-    // Get data for the subscription list
-    fun processSubscriptionList() = viewModelScope.launch(
-        context = viewModelScope.coroutineContext
-                + Dispatchers.IO) {
-
-//        val ids = subscriptionList.value;
-//        if (ids != null) {
-//            val podcastList = mutableListOf<ITunesAPI.PodcastArtist>();
-//            // Get lookup data and append image to each podcast
-//            for (i in 0..(ids.size - 1)) {
-//                val podcast = myPodRepo.lookupPodcastArtist(ids[i]);
-//                podcast.imageUrl = getPodcastArtistImage(podcast.artistName);
-//                podcastList.add(podcast);
-//            }
-//            subscriptionListData.postValue(podcastList);
-//        }
-    }
-
-    // Get data for the continue listening list
-    fun processContinueList() = viewModelScope.launch(
-        context = viewModelScope.coroutineContext
-                + Dispatchers.IO) {
-
-//        val ids = continueList.value;
-//        if (ids != null) {
-//            val episodeList = mutableListOf<ITunesAPI.Episode>();
-//            // Get lookup data and append image to each podcast
-//            for (i in 0..(ids.size - 1)) episodeList.add(myPodRepo.lookupEpisode(ids[i]));
-//            continueListListData.postValue(episodeList);
-//        }
-    }
-
-    // Get image for Podcast Artists
-    suspend fun getPodcastArtistImage(name: String): String {
-//        val image = myPodRepo.getPodcastArtistImage(name);
-//        if (image != null) return image;
-//        else return "https://upload.wikimedia.org/wikipedia/commons/f/f1/Heavy_red_%22x%22.png";
-        return "https://upload.wikimedia.org/wikipedia/commons/f/f1/Heavy_red_%22x%22.png";
-    }
-
 
     // Observers
-    fun observePodcastArtistSearchResults(): LiveData<List<ITunesAPI.Podcast>> {return podcastSearchResults};
-//    fun observeEpisodeSearchResults(): LiveData<List<ITunesAPI.Episode>> {return episodeSearchResults};
-    fun observeSubscriptionList(): LiveData<List<PodcastDao.Podcast>> {return myPodDbRepo.loadSubscriptions()};
-    fun observeContinueList(): LiveData<List<String>> {return continueList};
-    fun observeContinueListData(): LiveData<List<ITunesAPI.Podcast>> {return continueListListData};
+    fun observePodcastArtistSearchResults(): LiveData<List<ITunesAPI.Podcast>> {return podcastSearchResults}
+    fun observeSubscriptionList(): LiveData<List<PodcastDao.Podcast>> {return myPodDbRepo.loadSubscriptions()}
+    fun observeContinueList(): LiveData<List<EpisodeDao.Episode>> {return myPodDbRepo.getUnfinished()}
+    fun observeNewEpsList(): LiveData<List<EpisodeDao.Episode>>{return myPodDbRepo.getLatestEpisodes()}
 
-    //
+
     fun observePodcastProfile():MutableLiveData<PodcastDao.Podcast>{
         return podcastProfile
     }
@@ -255,9 +167,6 @@ AndroidViewModel(application) {
         return profileEpisodes
     }
 
-    fun setContinueList(list: List<String>) {
-        continueList.postValue(list);
-    }
 
     // Weird Nav Controller Stuff
     fun setNavController(navController: NavController){
