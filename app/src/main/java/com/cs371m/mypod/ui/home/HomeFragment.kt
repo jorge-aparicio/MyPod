@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.cs371m.mypod.databinding.FragmentHomeBinding
 import com.cs371m.mypod.ui.MainViewModel
 
@@ -43,7 +45,7 @@ class HomeFragment : Fragment() {
 
         val newEpisodesAdapter = NewEpisodesAdapter(viewModel)
         binding.newEpsList.adapter = newEpisodesAdapter
-        binding.newEpsList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false);
+        binding.newEpsList.layoutManager = GridLayoutManager(this.context, 4)
 
         // Subscription List Observers
         viewModel.observeNewEpsList().observe(viewLifecycleOwner) {
