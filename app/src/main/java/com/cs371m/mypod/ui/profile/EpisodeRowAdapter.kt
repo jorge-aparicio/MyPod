@@ -18,11 +18,11 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
 
     class PodcastDiff : DiffUtil.ItemCallback<EpisodeDao.Episode>() {
         override fun areItemsTheSame(oldItem: EpisodeDao.Episode, newItem: EpisodeDao.Episode): Boolean {
-            return oldItem.id == newItem.id;
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: EpisodeDao.Episode, newItem: EpisodeDao.Episode): Boolean {
-            return oldItem.title == newItem.title;
+            return oldItem.title == newItem.title
         }
 
     }
@@ -35,17 +35,17 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val binding = ProfileRowBinding.inflate(LayoutInflater.from(parent.context), parent, false);
-        val holder = VH(binding);
-        return holder;
+        val binding = ProfileRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val holder = VH(binding)
+        return holder
     }
 
     // TODO: Get image, title, etc
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val rowBinding = holder.rowBinding;
+        val rowBinding = holder.rowBinding
 
-        val episode = getItem(position);
-        rowBinding.episodeTitle.text = episode.title;
+        val episode = getItem(position)
+        rowBinding.episodeTitle.text = episode.title
         rowBinding.episodeTime.text = episode.duration
         rowBinding.episodeDate.text = parseDate(episode.pubDate)
         if (episode.imageUrl != null){
@@ -65,7 +65,7 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
             }
         }
 
-        rowBinding.root.setOnClickListener(){
+        rowBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
         }
 

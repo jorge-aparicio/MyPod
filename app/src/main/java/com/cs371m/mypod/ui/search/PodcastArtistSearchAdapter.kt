@@ -16,11 +16,11 @@ class PodcastArtistSearchAdapter(private val viewModel: MainViewModel)
 
     class PodcastDiff : DiffUtil.ItemCallback<ITunesAPI.Podcast>() {
         override fun areItemsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
-            return oldItem.collectionId == newItem.collectionId;
+            return oldItem.collectionId == newItem.collectionId
         }
 
         override fun areContentsTheSame(oldItem: ITunesAPI.Podcast, newItem: ITunesAPI.Podcast): Boolean {
-            return oldItem.collectionId == newItem.collectionId;
+            return oldItem.collectionId == newItem.collectionId
         }
 
     }
@@ -32,20 +32,20 @@ class PodcastArtistSearchAdapter(private val viewModel: MainViewModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val binding = PodRowBinding.inflate(LayoutInflater.from(parent.context), parent, false);
-        val holder = VH(binding);
-        return holder;
+        val binding = PodRowBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val holder = VH(binding)
+        return holder
     }
 
     // TODO: Get image, title, etc
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val podRowBinding = holder.podRowBinding;
+        val podRowBinding = holder.podRowBinding
 
-        val podcast = getItem(position);
-        podRowBinding.rowTitle.text = podcast.collectionName;
+        val podcast = getItem(position)
+        podRowBinding.rowTitle.text = podcast.collectionName
         Glide.glideFetch(podcast.artworkUrl100, podcast.artworkUrl100, podRowBinding.rowImage)
 
-        podRowBinding.root.setOnClickListener(){
+        podRowBinding.root.setOnClickListener {
             viewModel.updateProfile(podcast.collectionId.toInt())
             viewModel.getNavController().navigate(R.id.navigation_profile)
 

@@ -16,11 +16,11 @@ class ContinueAdapter(private val viewModel: MainViewModel)
 
     class EpisodeDiff : DiffUtil.ItemCallback<EpisodeDao.Episode>() {
         override fun areItemsTheSame(oldItem: EpisodeDao.Episode, newItem: EpisodeDao.Episode): Boolean {
-            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title);
+            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title)
         }
 
         override fun areContentsTheSame(oldItem: EpisodeDao.Episode, newItem: EpisodeDao.Episode): Boolean {
-            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title);
+            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title)
         }
 
     }
@@ -32,23 +32,23 @@ class ContinueAdapter(private val viewModel: MainViewModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val binding = PodTileBinding.inflate(LayoutInflater.from(parent.context), parent, false);
-        val holder = VH(binding);
-        return holder;
+        val binding = PodTileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val holder = VH(binding)
+        return holder
     }
 
     // TODO: Get image, title, etc
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val podTileBinding = holder.podTileBinding;
+        val podTileBinding = holder.podTileBinding
 
         // Set the title
-        val episode = getItem(holder.adapterPosition);
-        podTileBinding.tileTitle.text = episode.title;
+        val episode = getItem(holder.adapterPosition)
+        podTileBinding.tileTitle.text = episode.title
 
         // Set the image
-        Glide.glideFetch(episode.imageUrl!!, episode.imageUrl!!, podTileBinding.tileImage)
+        Glide.glideFetch(episode.imageUrl!!, episode.imageUrl, podTileBinding.tileImage)
 
-        podTileBinding.root.setOnClickListener(){
+        podTileBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
         }
     }

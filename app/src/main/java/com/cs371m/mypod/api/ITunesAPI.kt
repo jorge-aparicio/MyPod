@@ -9,8 +9,8 @@ interface ITunesAPI {
 
 
     // Episode Data
-    data class PodcastSearchResultsList(val results: List<Podcast>);
-    data class PodcastFeedResultsList(val results: List<Podcast>);
+    data class PodcastSearchResultsList(val results: List<Podcast>)
+    data class PodcastFeedResultsList(val results: List<Podcast>)
     data class Podcast(
         val collectionId: String,
         val collectionName: String,
@@ -19,10 +19,11 @@ interface ITunesAPI {
     )
 
     @GET("search?media=podcast&entity=podcast")
-    suspend fun searchPodcasts(@Query("term") term: String, @Query("limit") limit: Int) : PodcastSearchResultsList;
+    suspend fun searchPodcasts(@Query("term") term: String, @Query("limit") limit: Int) : PodcastSearchResultsList
+
     // Single Episode Lookup
     @GET("lookup?media=podcast&entity=podcast")
-    suspend fun lookupPodcast(@Query("id") id: String) : PodcastFeedResultsList;
+    suspend fun lookupPodcast(@Query("id") id: String) : PodcastFeedResultsList
 
     /**
      * Factory class for convenient creation of the Api Service interface

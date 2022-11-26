@@ -16,11 +16,11 @@ class SubscriptionsAdaper(private val viewModel: MainViewModel)
 
     class PodcastDiff : DiffUtil.ItemCallback<PodcastDao.Podcast>() {
         override fun areItemsTheSame(oldItem: PodcastDao.Podcast, newItem: PodcastDao.Podcast): Boolean {
-            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title);
+            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title)
         }
 
         override fun areContentsTheSame(oldItem: PodcastDao.Podcast, newItem: PodcastDao.Podcast): Boolean {
-            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title);
+            return (oldItem.id == newItem.id) && (oldItem.title == newItem.title)
         }
 
     }
@@ -32,24 +32,24 @@ class SubscriptionsAdaper(private val viewModel: MainViewModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val binding = PodTileBinding.inflate(LayoutInflater.from(parent.context), parent, false);
-        val holder = VH(binding);
-        return holder;
+        val binding = PodTileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val holder = VH(binding)
+        return holder
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val podTileBinding = holder.podTileBinding;
+        val podTileBinding = holder.podTileBinding
 
         // Set the title
-        val podcast = getItem(holder.adapterPosition);
-        podTileBinding.tileTitle.text = podcast.title;
+        val podcast = getItem(holder.adapterPosition)
+        podTileBinding.tileTitle.text = podcast.title
 
-        podTileBinding.root.setOnClickListener(){
+        podTileBinding.root.setOnClickListener {
             viewModel.updateProfile(podcast.id)
             viewModel.getNavController().navigate(R.id.navigation_profile)
         }
         // Set the image
-        Glide.glideFetch(podcast.imageUrl!!, podcast.imageUrl!!, podTileBinding.tileImage)
+        Glide.glideFetch(podcast.imageUrl!!, podcast.imageUrl, podTileBinding.tileImage)
     }
 
 }

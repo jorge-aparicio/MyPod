@@ -19,7 +19,7 @@ class SubscriptionsFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
 
-    private val viewModel: MainViewModel by activityViewModels();
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,15 +33,15 @@ class SubscriptionsFragment : Fragment() {
         val root: View = binding.root
 
         // Set up adapter
-        val subAdapter = SubscriptionsAdaper(viewModel);
-        binding.subFragList.adapter = subAdapter;
+        val subAdapter = SubscriptionsAdaper(viewModel)
+        binding.subFragList.adapter = subAdapter
         binding.subFragList.layoutManager = GridLayoutManager(this.context, 4)
 
         // Subscription List Observers
         viewModel.observeSubscriptionList().observe(viewLifecycleOwner) {
             Log.d("#################################################", "Subscription List Changed (Size: ${it.size})")
-            subAdapter.submitList(it);
-            subAdapter.notifyDataSetChanged();
+            subAdapter.submitList(it)
+            subAdapter.notifyDataSetChanged()
         }
 
 //        val textView: TextView = binding.textNotifications

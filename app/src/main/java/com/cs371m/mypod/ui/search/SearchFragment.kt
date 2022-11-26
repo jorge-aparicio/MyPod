@@ -22,7 +22,7 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     // API Stuff
-    private val viewModel: MainViewModel by activityViewModels();
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,20 +40,20 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Search State (true = podcast, false = episode)
-        val podcastSearch = MutableLiveData<Boolean>();
+        val podcastSearch = MutableLiveData<Boolean>()
 
-        podcastSearch.postValue(true);
-        var searchTerm: String = "";
+        podcastSearch.postValue(true)
+        var searchTerm: String = ""
 
         // Set up initial adapters
-        val podcastArtistSearchAdapter = PodcastArtistSearchAdapter(viewModel);
-        binding.searchList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false);
+        val podcastArtistSearchAdapter = PodcastArtistSearchAdapter(viewModel)
+        binding.searchList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
 
-        viewModel.getTop25();
+        viewModel.getTop25()
         // Switch adapter on toggles
         podcastSearch.observe(viewLifecycleOwner) {
 
-                binding.searchList.adapter = podcastArtistSearchAdapter;
+                binding.searchList.adapter = podcastArtistSearchAdapter
 
         }
 
@@ -63,8 +63,8 @@ class SearchFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
 
                 // Search based on state
-                if(query!=null && query!!.length > 2) {
-                        viewModel.searchPodcasts(query, 15);
+                if(query!=null && query.length > 2) {
+                        viewModel.searchPodcasts(query, 15)
                     return true
                 }
                 else  {
@@ -76,13 +76,13 @@ class SearchFragment : Fragment() {
             override fun onQueryTextChange(newText: String?): Boolean {
 
                 // Set state
-                searchTerm = newText.toString();
+                searchTerm = newText.toString()
 
                 // Search based on state
-                if(newText!=null && newText!!.length > 2) {
+                if(newText!=null && newText.length > 2) {
 
 
-                        viewModel.searchPodcasts(newText, 20);
+                        viewModel.searchPodcasts(newText, 20)
 
 
                     return true
@@ -98,8 +98,8 @@ class SearchFragment : Fragment() {
 
         // Display results
         viewModel.observePodcastArtistSearchResults().observe(viewLifecycleOwner) {
-            podcastArtistSearchAdapter.submitList(it);
-            podcastArtistSearchAdapter.notifyDataSetChanged();
+            podcastArtistSearchAdapter.submitList(it)
+            podcastArtistSearchAdapter.notifyDataSetChanged()
         }
 
 

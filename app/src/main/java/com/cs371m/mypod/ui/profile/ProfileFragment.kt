@@ -29,9 +29,9 @@ class ProfileFragment : Fragment() {
         private val binding get() = _binding!!
 
         // API Stuff
-        private val viewModel: MainViewModel by activityViewModels();
+        private val viewModel: MainViewModel by activityViewModels()
 
-        override fun onCreateView(
+    override fun onCreateView(
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
@@ -45,7 +45,7 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = EpisodeRowAdapter(viewModel);
+        val adapter = EpisodeRowAdapter(viewModel)
         binding.episodeList.adapter = adapter
         binding.episodeList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
 
@@ -64,7 +64,7 @@ class ProfileFragment : Fragment() {
             if (it.imageUrl != null)
                 Glide.glideFetch(it.imageUrl, it.imageUrl, binding.podcastImage)
         }
-        binding.subscribeButton.setOnClickListener() {
+        binding.subscribeButton.setOnClickListener {
                 if (binding.subscribeButton.text == "Subscribe") {
                     binding.subscribeButton.text = "Unsubscribe"
 
