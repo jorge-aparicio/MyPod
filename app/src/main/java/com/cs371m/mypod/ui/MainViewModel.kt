@@ -46,6 +46,9 @@ class MainViewModel(
     private val podcastProfile = MutableLiveData<PodcastDao.Podcast>()
     private val profileEpisodes = MutableLiveData<List<EpisodeDao.Episode>>()
 
+    // Media Player Stuff
+    private val currPlaying = MutableLiveData<List<String>>();
+
 
     fun getTop25() {
         viewModelScope.launch(
@@ -183,6 +186,9 @@ class MainViewModel(
         return profileEpisodes
     }
 
+    fun observeCurrPlaying(): MutableLiveData<List<String>> {
+        return currPlaying;
+    }
 
     // Weird Nav Controller Stuff
     fun setNavController(navController: NavController) {
@@ -302,6 +308,16 @@ class MainViewModel(
         )
         myPodDbRepo.updateEpisode(newEp)
 
+    }
+
+    fun setCurrPlaying(pdTitle: String, epTitle: String, imgURL: String, audioURL: String, duration: String) {
+        val input = mutableListOf<String>();
+        input.add(pdTitle);
+        input.add(epTitle);
+        input.add(imgURL);
+        input.add(audioURL);
+        input.add(duration);
+        currPlaying.postValue(input);
     }
 
 }

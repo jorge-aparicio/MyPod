@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter
 class EpisodeRowAdapter(private val viewModel: MainViewModel)
     : ListAdapter<EpisodeDao.Episode, EpisodeRowAdapter.VH>(PodcastDiff()) {
 
+    private lateinit var podcastName: String;
+
     class PodcastDiff : DiffUtil.ItemCallback<EpisodeDao.Episode>() {
         override fun areItemsTheSame(oldItem: EpisodeDao.Episode, newItem: EpisodeDao.Episode): Boolean {
             return oldItem.id == newItem.id
@@ -67,8 +69,13 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
 
         rowBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
+            viewModel.setCurrPlaying(podcastName, episode.title, episode.imageUrl.toString(), episode.audioUrl, episode.duration.toString());
         }
 
+    }
+
+    fun setPodcastName (name: String) {
+        podcastName = name;
     }
 
     private fun parseDate(pubDate: String?):String{

@@ -56,7 +56,7 @@ class ProfileFragment : Fragment() {
                 binding.subscribeButton.text = "Subscribe"
             }
 
-
+            adapter.setPodcastName(it.title)
             binding.podcastTitle.text=it.title
             binding.podcastDescription.text = it.description
             binding.episodeDate.text = it.numEpisodes.toString() + " episodes"

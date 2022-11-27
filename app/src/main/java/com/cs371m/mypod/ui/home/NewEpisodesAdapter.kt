@@ -50,6 +50,7 @@ class NewEpisodesAdapter(private val viewModel: MainViewModel)
         podTileBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
         }
+
     }
 
 }
