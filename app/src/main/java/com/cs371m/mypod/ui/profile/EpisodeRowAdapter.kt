@@ -1,5 +1,6 @@
 package com.cs371m.mypod.ui.search
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View.*
 import android.view.ViewGroup
@@ -13,7 +14,7 @@ import com.cs371m.mypod.ui.MainViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-class EpisodeRowAdapter(private val viewModel: MainViewModel)
+class EpisodeRowAdapter(private val viewModel: MainViewModel, private val context: Context)
     : ListAdapter<EpisodeDao.Episode, EpisodeRowAdapter.VH>(PodcastDiff()) {
 
     private lateinit var podcastName: String;
@@ -70,6 +71,9 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel)
         rowBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
             viewModel.setCurrPlaying(podcastName, episode.title, episode.imageUrl.toString(), episode.audioUrl, episode.duration.toString());
+        }
+        rowBinding.root.setOnLongClickListener(){
+            viewModel.showBottomSheetDialog(context,episode)
         }
 
     }

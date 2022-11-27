@@ -40,11 +40,11 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Set up adaptersegisterForContextMenu(
-        continueAdapter = ContinueAdapter(viewModel)
+        continueAdapter = ContinueAdapter(viewModel,this.requireContext())
         binding.continueList.adapter = continueAdapter
         binding.continueList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
 
-        newEpisodesAdapter = NewEpisodesAdapter(viewModel)
+        newEpisodesAdapter = NewEpisodesAdapter(viewModel, this.requireContext())
         binding.newEpsList.adapter = newEpisodesAdapter
         binding.newEpsList.layoutManager = GridLayoutManager(this.context, 4)
         registerForContextMenu(binding.continueList)

@@ -1,5 +1,6 @@
 package com.cs371m.mypod.ui.home
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -10,7 +11,7 @@ import com.cs371m.mypod.db.EpisodeDao
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
 
-class NewEpisodesAdapter(private val viewModel: MainViewModel)
+class NewEpisodesAdapter(private val viewModel: MainViewModel, private  val context: Context)
     : ListAdapter<EpisodeDao.Episode, NewEpisodesAdapter.VH>(EpisodeDiff()) {
 
     class EpisodeDiff : DiffUtil.ItemCallback<EpisodeDao.Episode>() {
@@ -49,6 +50,9 @@ class NewEpisodesAdapter(private val viewModel: MainViewModel)
 
         podTileBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
+        }
+        podTileBinding.root.setOnLongClickListener(){
+            viewModel.showBottomSheetDialog(context,episode)
         }
 
     }

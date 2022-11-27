@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.SeekBar
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -17,6 +18,7 @@ import com.cs371m.mypod.databinding.ActivityMainBinding
 import com.cs371m.mypod.db.MyPodDatabase
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.*
 
 class MainActivity : AppCompatActivity() {
@@ -95,6 +97,8 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+
 
     // Play a song using the audio url
     private fun playSong(audioURL: String) {

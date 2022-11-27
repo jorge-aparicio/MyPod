@@ -1,7 +1,10 @@
 package com.cs371m.mypod.ui
 
+import android.R
 import android.app.Application
+import android.content.Context
 import android.util.Log
+import android.widget.LinearLayout
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,11 +18,13 @@ import com.cs371m.mypod.db.MyPodDatabase
 import com.cs371m.mypod.db.MyPodDbRepo
 import com.cs371m.mypod.db.PodcastDao
 import com.cs371m.mypod.xml.FeedDownloader
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+
 
 class MainViewModel(
     application: Application
@@ -322,6 +327,17 @@ class MainViewModel(
         input.add(audioURL);
         input.add(duration);
         currPlaying.postValue(input);
+    }
+
+    fun showBottomSheetDialog(context:Context, episode: EpisodeDao.Episode):Boolean {
+        val bottomSheetDialog = BottomSheetDialog(context)
+        bottomSheetDialog.setContentView(com.cs371m.mypod.R.layout.bottom_sheet)
+        val play = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.playLinearLayout)
+        val markPlayed = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.markLinearLayout)
+        val download = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.downloadLinearLayout)
+        val share = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.shareLinearLayout)
+        bottomSheetDialog.show()
+        return true
     }
 
 }

@@ -45,7 +45,7 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = EpisodeRowAdapter(viewModel)
+        val adapter = EpisodeRowAdapter(viewModel,this.requireContext())
         binding.episodeList.adapter = adapter
         binding.episodeList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
 
