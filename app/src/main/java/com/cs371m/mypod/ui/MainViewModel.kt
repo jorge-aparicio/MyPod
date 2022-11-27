@@ -109,7 +109,7 @@ class MainViewModel(
         val subscribed = if (dbPodcast != null) {
             println("!!!LOADING FROM DB!!!")
             var eps = myPodDbRepo.loadEpisodesByPodcastId(id)
-            podcastProfile.postValue(dbPodcast)
+            podcastProfile.postValue(dbPodcast!!)
             profileEpisodes.postValue(eps)
             dbPodcast.subscribed
         } else false
