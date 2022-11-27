@@ -148,6 +148,7 @@ class MainViewModel(
                             article.pubDate,
                             convertTime(article.duration),
                             id,
+                            podcast.collectionName,
                             channel.items.size - index
                         )
                     }.toList()
@@ -257,6 +258,7 @@ class MainViewModel(
            originalEp.pubDate,
            originalEp.duration,
            originalEp.podcastId,
+           originalEp.podcastName,
            originalEp.episodeNumber,
            started,
            originalEp.progress,
@@ -279,6 +281,7 @@ class MainViewModel(
             originalEp.pubDate,
             originalEp.duration,
             originalEp.podcastId,
+            originalEp.podcastName,
             originalEp.episodeNumber,
             originalEp.started,
             originalEp.progress,
@@ -301,6 +304,7 @@ class MainViewModel(
             originalEp.pubDate,
             originalEp.duration,
             originalEp.podcastId,
+            originalEp.podcastName,
             originalEp.episodeNumber,
             originalEp.started,
             progress,

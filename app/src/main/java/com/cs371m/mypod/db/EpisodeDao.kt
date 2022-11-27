@@ -20,10 +20,12 @@ interface EpisodeDao {
         @ColumnInfo(name = "pub_date")val pubDate: String?,
         @ColumnInfo(name = "duration")val duration: String?,
         @ColumnInfo(name = "podcast_id")val podcastId : Int,
+        @ColumnInfo(name = "podcast_name")val podcastName : String,
         @ColumnInfo(name = "episode_number") val episodeNumber: Int,
         @ColumnInfo(name = "started")val started: Boolean = false,
         @ColumnInfo(name = "progress")val progress: Int = 0,
         @ColumnInfo(name= "played") val played:Boolean = false
+
     )
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
