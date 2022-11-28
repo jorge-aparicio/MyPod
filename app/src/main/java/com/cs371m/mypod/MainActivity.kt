@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     private lateinit var mediaPlayer: MediaPlayer
     private var paused = true;
     private val userModifyingSeekBar = AtomicBoolean(false)
-
+    private var playingEpisodeId = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -74,13 +74,24 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 paused = true;
                 mediaPlayer.pause();
                 binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp));
+                if(playingEpisodeId != "") viewModel.setProgress(playingEpisodeId, mediaPlayer.currentPosition)
             }
         }
 
+        mediaPlayer.setOnCompletionListener {
+            if(playingEpisodeId != "") {
+                viewModel.setProgress(playingEpisodeId, 0)
+                viewModel.setPlayed(playingEpisodeId, true)
+                mediaPlayer.reset();
+            }
+        }
         // Check for podcast changes
         viewModel.observeCurrPlaying().observe(this) {
-            mediaPlayer.reset();
+            if(playingEpisodeId != "") viewModel.setProgress(playingEpisodeId, mediaPlayer.currentPosition)
             if (it != null) {
+
+                mediaPlayer.reset();
+                playingEpisodeId = it.id
 
                 // Set up playBar Details
                 binding.pdTitle.text = it.podcastName;
@@ -88,7 +99,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 Glide.glideFetch(it.imageUrl.toString(), it.imageUrl.toString(), binding.rowImage)
 
                 // Play the podcast
-                playSong(it.audioUrl);
+                playSong(it.audioUrl,it.progress);
                 paused = false;
                 binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_pause_black_24dp));
 
@@ -124,10 +135,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     // Play a song using the audio url
-    private fun playSong(audioURL: String) {
+    private fun playSong(audioURL: String, progress: Int) {
         mediaPlayer.reset();
         mediaPlayer.setDataSource(audioURL)
         mediaPlayer.prepare();
+        mediaPlayer.seekTo(progress)
         mediaPlayer.start();
     }
 
