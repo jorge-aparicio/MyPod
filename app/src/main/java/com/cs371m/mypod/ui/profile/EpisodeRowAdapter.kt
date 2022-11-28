@@ -68,9 +68,10 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel, private val contex
             }
         }
 
+        // Play when clicked on
         rowBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
-            viewModel.setCurrPlaying(podcastName, episode.title, episode.imageUrl.toString(), episode.audioUrl, episode.duration.toString());
+            viewModel.setCurrPlaying(episode);
         }
         rowBinding.root.setOnLongClickListener(){
             viewModel.showBottomSheetDialog(context,episode)

@@ -52,7 +52,7 @@ class MainViewModel(
     private val profileEpisodes = MutableLiveData<List<EpisodeDao.Episode>>()
 
     // Media Player Stuff
-    private val currPlaying = MutableLiveData<List<String>>();
+    private val currPlaying = MutableLiveData<EpisodeDao.Episode>();
 
 
     fun getTop25() {
@@ -192,7 +192,7 @@ class MainViewModel(
         return profileEpisodes
     }
 
-    fun observeCurrPlaying(): MutableLiveData<List<String>> {
+    fun observeCurrPlaying(): MutableLiveData<EpisodeDao.Episode> {
         return currPlaying;
     }
 
@@ -319,14 +319,8 @@ class MainViewModel(
 
     }
 
-    fun setCurrPlaying(pdTitle: String, epTitle: String, imgURL: String, audioURL: String, duration: String) {
-        val input = mutableListOf<String>();
-        input.add(pdTitle);
-        input.add(epTitle);
-        input.add(imgURL);
-        input.add(audioURL);
-        input.add(duration);
-        currPlaying.postValue(input);
+    fun setCurrPlaying(episode: EpisodeDao.Episode) {
+        currPlaying.postValue(episode);
     }
 
     fun showBottomSheetDialog(context:Context, episode: EpisodeDao.Episode):Boolean {

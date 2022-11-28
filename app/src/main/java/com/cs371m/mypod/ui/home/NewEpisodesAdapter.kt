@@ -48,8 +48,10 @@ class NewEpisodesAdapter(private val viewModel: MainViewModel, private  val cont
         // Set the image
         Glide.glideFetch(episode.imageUrl!!, episode.imageUrl, podTileBinding.tileImage)
 
+        // Play when clicked on
         podTileBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
+            viewModel.setCurrPlaying(episode);
         }
         podTileBinding.root.setOnLongClickListener(){
             viewModel.showBottomSheetDialog(context,episode)

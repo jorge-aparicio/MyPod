@@ -9,6 +9,7 @@ import android.widget.SeekBar
 import androidx.activity.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -20,8 +21,9 @@ import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.*
+import java.util.concurrent.atomic.AtomicBoolean
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -29,6 +31,8 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     // Media Player
     private lateinit var mediaPlayer: MediaPlayer
+    private var paused = true;
+    private val userModifyingSeekBar = AtomicBoolean(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,45 +64,64 @@ class MainActivity : AppCompatActivity() {
         // Set up Media Player
         mediaPlayer = MediaPlayer();
 
+        // Set up play bar controls
+        binding.imageButton.setOnClickListener {
+            if (paused) {
+                paused = false;
+                mediaPlayer.start();
+                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_pause_black_24dp));
+            } else {
+                paused = true;
+                mediaPlayer.pause();
+                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp));
+            }
+        }
+
         // Check for podcast changes
         viewModel.observeCurrPlaying().observe(this) {
             mediaPlayer.reset();
-            if (it != null && it.size == 5) {
+            if (it != null) {
 
                 // Set up playBar Details
-                binding.pdTitle.text = it[0];
-                binding.epTitle.text = it[1];
-                Glide.glideFetch(it[2], it[2], binding.rowImage)
+                binding.pdTitle.text = it.podcastName;
+                binding.epTitle.text = it.title;
+                Glide.glideFetch(it.imageUrl.toString(), it.imageUrl.toString(), binding.rowImage)
 
-                // Get Episode duration
-                val splitString = it[4].split(":");
-                var hours = 0;
-                var min = 0;
-                var secs = 0;
-                if (splitString.size == 3) hours = splitString[0].toInt();
-                if (splitString.size == 3) min = splitString[1].toInt();
-                else if (splitString.size == 2) min = splitString[0].toInt();
-                if (splitString.size == 3) secs = splitString[2].toInt();
-                else if (splitString.size == 2) secs = splitString[1].toInt();
-                else secs = splitString[0].toInt()
+                // Play the podcast
+                playSong(it.audioUrl);
+                paused = false;
+                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_pause_black_24dp));
 
                 // Set up seekbar
-                binding.seekBar.max = hours * 3600 + min * 60 + secs;
+                binding.seekBar.max = mediaPlayer.duration / 1000;
                 Log.d("######################", "Episode duration in seconds: ${binding.seekBar.max}")
 
-                playSong(it[3]);
             }
         }
 
         // Seekbar progress
         val millisec = 100L
-        CoroutineScope(Dispatchers.Main).launch {
-            displayTime(millisec, binding.seekBar)
+
+        // Handle the user modifying the seek bar
+        binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                userModifyingSeekBar.set(true);
+            }
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                mediaPlayer.seekTo(seekBar.progress * 1000);
+                Log.d("######################", "durs: ${mediaPlayer.currentPosition}")
+                userModifyingSeekBar.set(false);
+            }
+        })
+
+        // Update seekbar over time
+        lifecycleScope.launch {
+            displayTime(millisec, binding.seekBar);
         }
 
     }
-
-
 
     // Play a song using the audio url
     private fun playSong(audioURL: String) {
@@ -111,10 +134,12 @@ class MainActivity : AppCompatActivity() {
     // Coroutine that modifies seekbar
     private suspend fun displayTime(misc: Long, seekBar: SeekBar) {
         // While the coroutine is running and has not been canceled by its parent
-        while (GlobalScope.coroutineContext.isActive) {
-            seekBar.progress = mediaPlayer.currentPosition / 1000;
-            // Leave this code as is.  it inserts a delay so that this thread does
-            // not consume too much CPU
+        while (true) {
+            if (!userModifyingSeekBar.get()) seekBar.progress = mediaPlayer.currentPosition / 1000;
+            if (seekBar.progress == seekBar.max) {
+                paused = true;
+                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp));
+            };
             delay(misc)
         }
     }
