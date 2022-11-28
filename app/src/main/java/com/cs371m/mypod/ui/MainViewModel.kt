@@ -3,6 +3,7 @@ package com.cs371m.mypod.ui
 import android.R
 import android.app.Application
 import android.content.Context
+import android.graphics.Color
 import android.util.Log
 import android.widget.LinearLayout
 import androidx.lifecycle.AndroidViewModel
@@ -13,6 +14,7 @@ import androidx.navigation.NavController
 import com.cs371m.mypod.api.AppleAPI
 import com.cs371m.mypod.api.ITunesAPI
 import com.cs371m.mypod.api.MyPodRepo
+import com.cs371m.mypod.databinding.ProfileRowBinding
 import com.cs371m.mypod.db.EpisodeDao
 import com.cs371m.mypod.db.MyPodDatabase
 import com.cs371m.mypod.db.MyPodDbRepo
@@ -144,6 +146,11 @@ class MainViewModel(
                     .mapIndexed { index, article ->
                         val uuidString = article.title!! + channel.title
                         val uuid = UUID.nameUUIDFromBytes(uuidString.toByteArray())
+                        val episode = myPodDbRepo.getEpisodeById(uuid.toString())
+                        if(episode != null){
+                            episode
+                        }
+                        else{
                         val image = article.image ?: imageUrl
                         EpisodeDao.Episode(
                             uuid.toString(),
@@ -155,7 +162,7 @@ class MainViewModel(
                             id,
                             podcast.collectionName,
                             channel.items.size - index
-                        )
+                        )}
                     }.toList()
                 if (episodes.isNotEmpty()) {
                     profileEpisodes.postValue(episodes)
@@ -323,6 +330,7 @@ class MainViewModel(
         currPlaying.postValue(episode);
     }
 
+
     fun showBottomSheetDialog(context:Context, episode: EpisodeDao.Episode):Boolean {
         val bottomSheetDialog = BottomSheetDialog(context)
         bottomSheetDialog.setContentView(com.cs371m.mypod.R.layout.bottom_sheet)
@@ -342,4 +350,33 @@ class MainViewModel(
         return true
     }
 
+    fun showBottomDialogProfile(context:Context, episode: EpisodeDao.Episode, rowBinding:ProfileRowBinding):Boolean{
+        val bottomSheetDialog = BottomSheetDialog(context)
+        bottomSheetDialog.setContentView(com.cs371m.mypod.R.layout.bottom_sheet)
+        val play = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.playLinearLayout)
+        play?.setOnClickListener(){
+            setCurrPlaying(episode);
+            bottomSheetDialog.dismiss();
+        }
+        val markPlayed = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.markLinearLayout)
+        markPlayed?.setOnClickListener(){
+            setPlayed(episode.id, !episode.played)
+            if(!episode.played){
+                rowBinding.episodeTitle.setTextColor(Color.GRAY)
+                rowBinding.episodeTime.setTextColor(Color.GRAY)
+                rowBinding.episodeDate.setTextColor(Color.GRAY)
+
+            }else{
+                rowBinding.episodeTitle.setTextColor(Color.WHITE)
+                rowBinding.episodeTime.setTextColor(Color.WHITE)
+                rowBinding.episodeDate.setTextColor(Color.WHITE)
+            }
+            bottomSheetDialog.dismiss();
+
+        }
+        val download = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.downloadLinearLayout)
+        val share = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.shareLinearLayout)
+        bottomSheetDialog.show()
+        return true
+    }
 }

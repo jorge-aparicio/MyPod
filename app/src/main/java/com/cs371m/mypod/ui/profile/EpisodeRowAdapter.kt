@@ -1,6 +1,7 @@
 package com.cs371m.mypod.ui.search
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View.*
 import android.view.ViewGroup
@@ -51,11 +52,21 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel, private val contex
         rowBinding.episodeTitle.text = episode.title
         rowBinding.episodeTime.text = episode.duration
         rowBinding.episodeDate.text = parseDate(episode.pubDate)
+
+        if(episode.played){
+            rowBinding.episodeTitle.setTextColor(Color.GRAY)
+            rowBinding.episodeTime.setTextColor(Color.GRAY)
+            rowBinding.episodeDate.setTextColor(Color.GRAY)
+
+        }else{
+            rowBinding.episodeTitle.setTextColor(Color.WHITE)
+            rowBinding.episodeTime.setTextColor(Color.WHITE)
+            rowBinding.episodeDate.setTextColor(Color.WHITE)
+        }
         if (episode.imageUrl != null){
             rowBinding.episodeImage.visibility = VISIBLE
             Glide.glideFetch(episode.imageUrl, episode.imageUrl, rowBinding.episodeImage)
         }
-
 
         else{
             val imageUrl = viewModel.getDb().getPodcast(episode.podcastId)?.imageUrl
@@ -74,7 +85,7 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel, private val contex
             viewModel.setCurrPlaying(episode);
         }
         rowBinding.root.setOnLongClickListener(){
-            viewModel.showBottomSheetDialog(context,episode)
+            viewModel.showBottomDialogProfile(context,episode,rowBinding)
         }
 
     }
