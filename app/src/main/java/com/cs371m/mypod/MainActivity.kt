@@ -1,29 +1,37 @@
 package com.cs371m.mypod
 
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.widget.LinearLayout
 import android.widget.SeekBar
 import androidx.activity.viewModels
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.room.Room
 import com.cs371m.mypod.databinding.ActivityMainBinding
-import com.cs371m.mypod.db.MyPodDatabase
+import com.cs371m.mypod.db.EpisodeDao
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.coroutines.*
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
+
 
 class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
@@ -41,6 +49,36 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
+        val download: (EpisodeDao.Episode)->Unit = {
+            val episode = it
+            val manager =  getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager;
+            val file ="MyPod/"+episode.id
+//        val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS).toString() +file
+
+            val request = DownloadManager.Request(Uri.parse(episode.audioUrl))
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE) // Visibility of the download Notification
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_PODCASTS,file) // Uri of the destination file
+                .setTitle(episode.title) // Title of the Download Notification
+                .setDescription("Downloading") // Description of the Download Notification
+                .setRequiresCharging(false) // Set if charging is required to begin the download
+                .setAllowedOverMetered(true) // Set if download is allowed on Mobile network
+                .setAllowedOverRoaming(true)
+            val downloadID = manager!!.enqueue(request)
+
+            viewModel.downloadEpisode(episode,downloadID.toInt(),file)
+            val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
+
+                override fun onReceive(ctxt: Context, intent: Intent) {
+                    // your code
+                    val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                        viewModel.setDownloaded(id.toInt())
+                }
+            }
+            registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        }
+
+        viewModel.setDownloadFun(download)
         val navView: BottomNavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
@@ -162,5 +200,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             delay(misc)
         }
     }
+
 
 }

@@ -69,26 +69,11 @@ interface EpisodeDao {
             )])
     data class EpisodeDownload(
         @PrimaryKey val id:String,
-        @ColumnInfo(name = "audio_data",typeAffinity = ColumnInfo.BLOB)val audioData:ByteArray ,
-    ) {
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
+        @ColumnInfo(name = "download_id")val downloadId: Int ,
+        @ColumnInfo(name = "audio_path")val audioPath: String? ,
+        @ColumnInfo(name = "downloaded")val downloaded: Boolean ,
 
-            other as EpisodeDownload
-
-            if (id != other.id) return false
-            if (!audioData.contentEquals(other.audioData)) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = id.hashCode()
-            result = 31 * result + audioData.contentHashCode()
-            return result
-        }
-    }
+        )
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertEpisodeDownload(vararg episodeDownload: EpisodeDownload)
@@ -96,7 +81,12 @@ interface EpisodeDao {
     @Delete
     suspend fun deleteEpisodeDownload(vararg episodeDownload: EpisodeDownload)
 
-    @Query("SELECT * FROM episode_downloads WHERE id = :id")
-    fun getEpisodeDownloadById(id: String): EpisodeDownload
+    @Update
+    suspend fun updateEpisodeDownload(vararg episode: EpisodeDownload)
 
+    @Query("SELECT * FROM episode_downloads WHERE id = :id")
+    fun getEpisodeDownloadById(id: String): EpisodeDownload?
+
+    @Query("SELECT * FROM episode_downloads WHERE download_id = :downloadId")
+    fun getEpisodeDownloadByDownloadId(downloadId: Int): EpisodeDownload?
 }

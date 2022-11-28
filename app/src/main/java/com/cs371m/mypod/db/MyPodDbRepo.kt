@@ -63,7 +63,16 @@ class MyPodDbRepo(private val db:MyPodDatabase) {
         db.episodeDao().deleteEpisodeDownload(episodeDownload)
     }
 
-    fun getEpisodeDownloadById(id: String): EpisodeDao.EpisodeDownload{
+    fun getEpisodeDownloadById(id: String): EpisodeDao.EpisodeDownload?{
         return db.episodeDao().getEpisodeDownloadById(id)
     }
+    suspend fun updateEpisodeDownload(episodeDownload: EpisodeDao.EpisodeDownload){
+        db.episodeDao().updateEpisodeDownload(episodeDownload)
+    }
+
+    fun getEpisodeDownloadByDownloadId(downloadId: Int): EpisodeDao.EpisodeDownload?{
+        return db.episodeDao().getEpisodeDownloadByDownloadId(downloadId)
+
+    }
+
 }

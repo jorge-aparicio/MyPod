@@ -1,11 +1,17 @@
 package com.cs371m.mypod.ui
 
-import android.R
 import android.app.Application
+import android.app.DownloadManager
 import android.content.Context
+import android.content.Context.DOWNLOAD_SERVICE
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
+import android.os.Environment
 import android.util.Log
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,6 +31,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.*
 
 
@@ -55,7 +62,7 @@ class MainViewModel(
 
     // Media Player Stuff
     private val currPlaying = MutableLiveData<EpisodeDao.Episode>();
-
+    private var downloadFunc: ((EpisodeDao.Episode) -> Unit)? = null
 
     fun getTop25() {
         viewModelScope.launch(
@@ -330,6 +337,26 @@ class MainViewModel(
         currPlaying.postValue(episode);
     }
 
+    fun setDownloadFun(func: (EpisodeDao.Episode)->Unit){
+        downloadFunc = func
+    }
+
+    fun downloadEpisode(episode: EpisodeDao.Episode,downloadID: Int, file:String) = viewModelScope.launch(
+    context = viewModelScope.coroutineContext
+    + Dispatchers.IO
+    ) {
+
+        myPodDbRepo.insertEpisodeDownload(EpisodeDao.EpisodeDownload(episode.id,downloadID,file,false))
+    }
+
+    fun setDownloaded(downloadId:Int)= viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO
+    ) {
+        val download = myPodDbRepo.getEpisodeDownloadByDownloadId(downloadId)
+        if(download != null) myPodDbRepo.updateEpisodeDownload(EpisodeDao.EpisodeDownload(download.id,download.downloadId,download.audioPath,true))
+
+    }
 
     fun showBottomSheetDialog(context:Context, episode: EpisodeDao.Episode):Boolean {
         val bottomSheetDialog = BottomSheetDialog(context)
@@ -345,7 +372,23 @@ class MainViewModel(
             bottomSheetDialog.dismiss();
         }
         val download = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.downloadLinearLayout)
+        download?.setOnClickListener(){
+            downloadFunc?.let { it1 -> it1(episode) }
+            bottomSheetDialog.dismiss()
+        }
         val share = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.shareLinearLayout)
+        share?.setOnClickListener(){
+            bottomSheetDialog.dismiss()
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, episode.audioUrl)
+                type = "text/plain"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(context,shareIntent,null)
+
+        }
         bottomSheetDialog.show()
         return true
     }
@@ -375,7 +418,23 @@ class MainViewModel(
 
         }
         val download = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.downloadLinearLayout)
+        download?.setOnClickListener(){
+            downloadFunc?.let { it1 -> it1(episode) }
+            bottomSheetDialog.dismiss()
+        }
         val share = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.shareLinearLayout)
+        share?.setOnClickListener(){
+            bottomSheetDialog.dismiss()
+            val sendIntent: Intent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, episode.audioUrl)
+                type = "text/plain"
+            }
+
+            val shareIntent = Intent.createChooser(sendIntent, null)
+            startActivity(context,shareIntent,null)
+
+        }
         bottomSheetDialog.show()
         return true
     }

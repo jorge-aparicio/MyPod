@@ -24,7 +24,7 @@ class FeedDownloader{
     // Given a string representation of a URL, sets up a connection and gets
 // an input stream.
     @Throws(IOException::class)
-    private fun downloadUrl(urlString: String): InputStream? {
+    suspend fun downloadUrl(urlString: String): InputStream? {
         val url = URL(urlString)
         return (url.openConnection() as? HttpURLConnection)?.run {
             readTimeout = 10000
