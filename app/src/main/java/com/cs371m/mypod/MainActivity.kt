@@ -4,6 +4,8 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import androidx.activity.viewModels
@@ -78,11 +80,15 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             }
         }
 
+        binding.frameLayout.visibility = GONE
+
         mediaPlayer.setOnCompletionListener {
             if(playingEpisodeId != "") {
                 viewModel.setProgress(playingEpisodeId, 0)
                 viewModel.setPlayed(playingEpisodeId, true)
                 mediaPlayer.reset();
+                binding.frameLayout.visibility = GONE
+
             }
         }
         // Check for podcast changes
@@ -97,6 +103,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 binding.pdTitle.text = it.podcastName;
                 binding.epTitle.text = it.title;
                 Glide.glideFetch(it.imageUrl.toString(), it.imageUrl.toString(), binding.rowImage)
+                binding.frameLayout.visibility = VISIBLE
 
                 // Play the podcast
                 playSong(it.audioUrl,it.progress);
