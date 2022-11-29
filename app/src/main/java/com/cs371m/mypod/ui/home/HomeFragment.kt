@@ -2,18 +2,16 @@ package com.cs371m.mypod.ui.home
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
-import androidx.activity.viewModels
-import androidx.core.view.size
+import android.view.*
+import android.widget.AdapterView.AdapterContextMenuInfo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.cs371m.mypod.R
 import com.cs371m.mypod.databinding.FragmentHomeBinding
 import com.cs371m.mypod.ui.MainViewModel
+
 
 class HomeFragment : Fragment() {
 
@@ -22,9 +20,11 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private lateinit var continueAdapter:ContinueAdapter
+    private lateinit var newEpisodesAdapter: NewEpisodesAdapter
 
     // API Stuff
-    private val viewModel: MainViewModel by activityViewModels();
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,41 +33,71 @@ class HomeFragment : Fragment() {
     ): View {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        val textView: TextView = binding.homeSubsText
-
-        return root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState);
+        super.onViewCreated(view, savedInstanceState)
 
-        // Set up adapter
-        val adapter = PodTileAdapter(viewModel);
-        binding.continueList.adapter = adapter;
+        // Set up adaptersegisterForContextMenu(
+        continueAdapter = ContinueAdapter(viewModel,this.requireContext())
+        binding.continueList.adapter = continueAdapter
         binding.continueList.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.HORIZONTAL, false)
 
-        val podList = mutableListOf<String>();
-        podList.add("998568017");
-        podList.add("1322200189")
-        podList.add("949195280")
-        podList.add("1401698612")
-        podList.add("1112004494")
-        viewModel.setPodcastsList(podList);
+        newEpisodesAdapter = NewEpisodesAdapter(viewModel, this.requireContext())
+        binding.newEpsList.adapter = newEpisodesAdapter
+        binding.newEpsList.layoutManager = GridLayoutManager(this.context, 3)
+        registerForContextMenu(binding.continueList)
+        registerForContextMenu(binding.newEpsList)
+        // Subscription List Observers
+        viewModel.observeNewEpsList().observe(viewLifecycleOwner) {
+        newEpisodesAdapter.submitList(it)
+            newEpisodesAdapter.notifyDataSetChanged()
 
-        // Search for podcast data everytime list is updated
-        viewModel.observePodcastsList().observe(viewLifecycleOwner) {
-            viewModel.searchPodcastsList();
         }
 
-        // Display podcasts
-        viewModel.observePodcastsDataList().observe(viewLifecycleOwner) {
-            adapter.submitList(it);
-            Log.d("XXXXXXXXXXXXXXXXXX", "${binding.continueList.size}")
+
+        viewModel.observeContinueList().observe(viewLifecycleOwner) {
+            Log.d("#################################################", "Continue Listening List Changed (Size: ${it.size})")
+            continueAdapter.submitList(it)
+            continueAdapter.notifyDataSetChanged()
         }
 
     }
+
+
+    override fun onCreateContextMenu(
+        menu: ContextMenu,
+        v: View,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
+        super.onCreateContextMenu(menu, v, menuInfo)
+        requireActivity().menuInflater.inflate(R.menu.episode_menu, menu)
+    }
+
+    override fun onContextItemSelected(item: MenuItem): Boolean {
+        val info = item.menuInfo as AdapterContextMenuInfo
+        println( info.targetView)
+        println(info.id)
+        println(info.position)
+        when (item.itemId) {
+            R.id.menu_play -> {
+                println("Playing ")
+            }
+            R.id.menu_mark_played ->{
+                println("Marking Played")
+            }
+            R.id.menu_download->{
+                println("Downloading")
+            }
+            R.id.menu_share -> {
+                println("Sharing")
+            }
+        }
+        return super.onContextItemSelected(item)
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

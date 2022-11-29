@@ -1,9 +1,0 @@
-query PodcastSearch($numResults: Int!, $term: String!,$pageNum: Int!) {
-    podcasts(first: $numResults, searchTerm: $term,, sort: {sortBy: RELEVANCE, direction: DESCENDING},page: $pageNum) {
-        data {
-            applePodcastsId
-            title
-            imageUrl
-        }
-    }
-}
