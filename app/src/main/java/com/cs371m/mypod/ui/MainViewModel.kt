@@ -17,8 +17,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.cs371m.mypod.api.AppleAPI
-import com.cs371m.mypod.api.ITunesAPI
 import com.cs371m.mypod.api.MyPodRepo
 import com.cs371m.mypod.databinding.ProfileRowBinding
 import com.cs371m.mypod.db.EpisodeDao
@@ -491,5 +489,22 @@ class MainViewModel(
         }
         bottomSheetDialog.show()
         return true
+
+
+    // This method converts time in milliseconds to minutes-second formatted string
+    fun convertTime(seconds: Int): String {
+        //XXX Write me
+        val totalMinutes = seconds / 60
+        val remainingSeconds = seconds % 60
+
+        return if (totalMinutes < 60 )
+            String.format("%02d:%02d", totalMinutes, remainingSeconds)
+        else{
+            val totalHours = totalMinutes/60
+            val remainingMinutes = totalMinutes % 60
+            String.format("%02d:%02d:%02d", totalHours,remainingMinutes, remainingSeconds)
+
+        }
+
     }
 }

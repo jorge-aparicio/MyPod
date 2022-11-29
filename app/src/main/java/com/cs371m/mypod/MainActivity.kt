@@ -232,4 +232,50 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
 
+
+//    private fun playSong(@Suppress("UNUSED_PARAMETER") view: View, songName: String) {
+//        // XXX Write me
+//        play(songName)
+//    }
+
+//    private fun setSeekVals() {
+//        binding.seekBar.progress =  currentPosition
+//        binding.seekBar.max =  duration
+//        val remaining =duration - currentPosition
+//        binding.RemainingTime.text = convertTime(remaining)
+//        binding.currentPosition.text = convertTime(currentPosition)
+//
+//    }
+//
+//    private fun pausePlay(): Boolean {
+//        if (player.isPlaying) player.pause()
+//        else {
+//            if(player.currentPosition == 0)   songCount++
+//            player.start()
+//
+//        }
+//        return player.isPlaying
+//
+//    }
+//
+//    private fun play(songName: String) {
+//
+//        if (player.isPlaying) player.stop()
+//        player.reset()
+//        val afd: AssetFileDescriptor =
+//            this.resources.openRawResourceFd(songResources[songName]!!.rawId) ?: return
+//        player.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+//        afd.close()
+//        player.prepare()
+//        binding.currentSongView.text = songName
+//        duration = player.duration
+//        currentPosition =  player.currentPosition
+//
+//
+//        if (isPlaying.get()) {
+//            player.start()
+//            songCount++
+//        }
+//
+//    }
 }
