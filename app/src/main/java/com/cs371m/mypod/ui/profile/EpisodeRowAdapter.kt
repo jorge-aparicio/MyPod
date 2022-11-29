@@ -8,8 +8,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.cs371m.mypod.api.EpisodesQuery
-import com.cs371m.mypod.api.type.DateTime
 import com.cs371m.mypod.databinding.ProfileRowBinding
 import com.cs371m.mypod.db.EpisodeDao
 import com.cs371m.mypod.glide.Glide
