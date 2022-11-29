@@ -1,4 +1,4 @@
-package com.cs371m.mypod.ui.search
+package com.cs371m.mypod.ui.profile
 
 import android.content.Context
 import android.graphics.Color
@@ -12,7 +12,6 @@ import com.cs371m.mypod.databinding.ProfileRowBinding
 import com.cs371m.mypod.db.EpisodeDao
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
-import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

@@ -11,9 +11,8 @@ import com.cs371m.mypod.databinding.FragmentPodProfileBinding
 import com.cs371m.mypod.db.PodcastDao
 import com.cs371m.mypod.glide.Glide
 import com.cs371m.mypod.ui.MainViewModel
-import com.cs371m.mypod.ui.search.EpisodeRowAdapter
 
-//import com.cs371m.mypod.ui.search.EpisodeRowAdapter
+//import com.cs371m.mypod.ui.profile.EpisodeRowAdapter
 
 
 class ProfileFragment : Fragment() {
