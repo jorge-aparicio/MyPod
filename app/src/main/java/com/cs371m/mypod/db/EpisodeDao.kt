@@ -24,7 +24,11 @@ interface EpisodeDao {
         @ColumnInfo(name = "episode_number") val episodeNumber: Int,
         @ColumnInfo(name = "started")val started: Boolean = false,
         @ColumnInfo(name = "progress")val progress: Int = 0,
-        @ColumnInfo(name= "played") val played:Boolean = false
+        @ColumnInfo(name= "played") val played:Boolean = false,
+        @ColumnInfo(name = "download_id")val downloadId: Int = -10 ,
+        @ColumnInfo(name = "audio_path")val audioPath: String? = null,
+        @ColumnInfo(name = "downloaded")val downloaded: Boolean = false,
+
 
     )
 
@@ -60,33 +64,6 @@ interface EpisodeDao {
     fun getUnfinished():LiveData<List<Episode>>
 
 
-    @Entity(tableName = "episode_downloads",
-        foreignKeys = [
-            ForeignKey(entity = Episode::class,
-                parentColumns = ["id"],
-                childColumns = ["id"],
-                onDelete = ForeignKey.CASCADE
-            )])
-    data class EpisodeDownload(
-        @PrimaryKey val id:String,
-        @ColumnInfo(name = "download_id")val downloadId: Int ,
-        @ColumnInfo(name = "audio_path")val audioPath: String? ,
-        @ColumnInfo(name = "downloaded")val downloaded: Boolean ,
-
-        )
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertEpisodeDownload(vararg episodeDownload: EpisodeDownload)
-
-    @Delete
-    suspend fun deleteEpisodeDownload(vararg episodeDownload: EpisodeDownload)
-
-    @Update
-    suspend fun updateEpisodeDownload(vararg episode: EpisodeDownload)
-
-    @Query("SELECT * FROM episode_downloads WHERE id = :id")
-    fun getEpisodeDownloadById(id: String): EpisodeDownload?
-
-    @Query("SELECT * FROM episode_downloads WHERE download_id = :downloadId")
-    fun getEpisodeDownloadByDownloadId(downloadId: Int): EpisodeDownload?
+    @Query("SELECT * FROM episodes WHERE download_id = :downloadId")
+    fun getEpisodeByDownloadId(downloadId: Int): Episode?
 }

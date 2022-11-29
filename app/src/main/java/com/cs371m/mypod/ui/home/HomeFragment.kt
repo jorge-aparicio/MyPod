@@ -20,8 +20,9 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private lateinit var continueAdapter:ContinueAdapter;
-    private lateinit var newEpisodesAdapter: NewEpisodesAdapter;
+    private lateinit var continueAdapter:ContinueAdapter
+    private lateinit var newEpisodesAdapter: NewEpisodesAdapter
+
     // API Stuff
     private val viewModel: MainViewModel by activityViewModels()
 

@@ -51,9 +51,9 @@ class NewEpisodesAdapter(private val viewModel: MainViewModel, private  val cont
         // Play when clicked on
         podTileBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
-            viewModel.setCurrPlaying(episode);
+            viewModel.setCurrPlaying(episode)
         }
-        podTileBinding.root.setOnLongClickListener(){
+        podTileBinding.root.setOnLongClickListener {
             viewModel.showBottomSheetDialog(context,episode)
         }
 

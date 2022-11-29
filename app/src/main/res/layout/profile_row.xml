@@ -24,12 +24,11 @@
         android:layout_marginStart="6dp"
         android:layout_marginTop="5dp"
         android:layout_marginEnd="8dp"
-        android:textColor="@color/white"
         android:gravity="left"
         android:text="TextView"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/episodeDate"
-        app:layout_constraintEnd_toStartOf="@+id/episodeTime"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toStartOf="@id/downloadImage"
         app:layout_constraintStart_toEndOf="@+id/episodeImage"
         app:layout_constraintTop_toTopOf="@+id/episodeImage" />
 
@@ -52,14 +51,23 @@
         android:id="@+id/episodeTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:gravity="right"
         android:text="TextView"
-        android:layout_marginEnd="6dp"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="@+id/episodeImage"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/episodeTitle"
         app:layout_constraintTop_toTopOf="@+id/episodeImage" />
+
+    <ImageView
+        android:id="@+id/downloadImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:src="@android:drawable/stat_sys_download"
+        app:layout_constraintBottom_toBottomOf="@+id/episodeTime"
+        app:layout_constraintEnd_toStartOf="@+id/episodeTime"
+        app:layout_constraintTop_toTopOf="@+id/episodeTime"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,6 @@
 package com.cs371m.mypod
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -30,6 +31,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -41,9 +45,11 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     private val viewModel: MainViewModel by viewModels()
     // Media Player
     private lateinit var mediaPlayer: MediaPlayer
-    private var paused = true;
+    private var paused = true
     private val userModifyingSeekBar = AtomicBoolean(false)
     private var playingEpisodeId = ""
+    private var file: File? = null
+    private var fos: FileInputStream? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -52,9 +58,9 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
         val download: (EpisodeDao.Episode)->Unit = {
             val episode = it
-            val manager =  getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager;
+            val manager =  getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             val file ="MyPod/"+episode.id
-//        val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS).toString() +file
+//        val filePath =
 
             val request = DownloadManager.Request(Uri.parse(episode.audioUrl))
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE) // Visibility of the download Notification
@@ -64,18 +70,19 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 .setRequiresCharging(false) // Set if charging is required to begin the download
                 .setAllowedOverMetered(true) // Set if download is allowed on Mobile network
                 .setAllowedOverRoaming(true)
-            val downloadID = manager!!.enqueue(request)
+            val downloadID = manager.enqueue(request)
 
             viewModel.downloadEpisode(episode,downloadID.toInt(),file)
             val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
 
+                @SuppressLint("SuspiciousIndentation")
                 override fun onReceive(ctxt: Context, intent: Intent) {
                     // your code
                     val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                        viewModel.setDownloaded(id.toInt())
+                        viewModel.setDownloaded(id.toInt(),true)
                 }
             }
-            registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+            registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
         }
 
         viewModel.setDownloadFun(download)
@@ -102,18 +109,18 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
 
         // Set up Media Player
-        mediaPlayer = MediaPlayer();
+        mediaPlayer = MediaPlayer()
 
         // Set up play bar controls
         binding.imageButton.setOnClickListener {
             if (paused) {
-                paused = false;
-                mediaPlayer.start();
-                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_pause_black_24dp));
+                paused = false
+                mediaPlayer.start()
+                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_pause_black_24dp))
             } else {
-                paused = true;
-                mediaPlayer.pause();
-                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp));
+                paused = true
+                mediaPlayer.pause()
+                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp))
                 if(playingEpisodeId != "") viewModel.setProgress(playingEpisodeId, mediaPlayer.currentPosition)
             }
         }
@@ -124,7 +131,12 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             if(playingEpisodeId != "") {
                 viewModel.setProgress(playingEpisodeId, 0)
                 viewModel.setPlayed(playingEpisodeId, true)
-                mediaPlayer.reset();
+                mediaPlayer.reset()
+                if(fos != null){
+                    fos!!.close()
+                    fos = null
+                    file = null
+                }
                 binding.frameLayout.visibility = GONE
 
             }
@@ -133,23 +145,29 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         viewModel.observeCurrPlaying().observe(this) {
             if(playingEpisodeId != "") viewModel.setProgress(playingEpisodeId, mediaPlayer.currentPosition)
             if (it != null) {
-
-                mediaPlayer.reset();
+                mediaPlayer.reset()
+                if(fos != null){
+                    fos!!.close()
+                    fos = null
+                    file = null
+                }
                 playingEpisodeId = it.id
 
                 // Set up playBar Details
-                binding.pdTitle.text = it.podcastName;
-                binding.epTitle.text = it.title;
+                binding.pdTitle.text = it.podcastName
+                binding.epTitle.text = it.title
                 Glide.glideFetch(it.imageUrl.toString(), it.imageUrl.toString(), binding.rowImage)
                 binding.frameLayout.visibility = VISIBLE
 
                 // Play the podcast
-                playSong(it.audioUrl,it.progress);
-                paused = false;
-                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_pause_black_24dp));
+                if(it.downloaded)playDownload(it.audioPath!!,it.progress)
+                else playSong(it.audioUrl,it.progress)
+
+                paused = false
+                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_pause_black_24dp))
 
                 // Set up seekbar
-                binding.seekBar.max = mediaPlayer.duration / 1000;
+                binding.seekBar.max = mediaPlayer.duration / 1000
                 Log.d("######################", "Episode duration in seconds: ${binding.seekBar.max}")
 
             }
@@ -163,40 +181,52 @@ class MainActivity : AppCompatActivity(), CoroutineScope by MainScope() {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-                userModifyingSeekBar.set(true);
+                userModifyingSeekBar.set(true)
             }
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-                mediaPlayer.seekTo(seekBar.progress * 1000);
+                mediaPlayer.seekTo(seekBar.progress * 1000)
                 Log.d("######################", "durs: ${mediaPlayer.currentPosition}")
-                userModifyingSeekBar.set(false);
+                userModifyingSeekBar.set(false)
             }
         })
 
         // Update seekbar over time
         lifecycleScope.launch {
-            displayTime(millisec, binding.seekBar);
+            displayTime(millisec, binding.seekBar)
         }
 
     }
 
     // Play a song using the audio url
     private fun playSong(audioURL: String, progress: Int) {
-        mediaPlayer.reset();
+        mediaPlayer.reset()
         mediaPlayer.setDataSource(audioURL)
-        mediaPlayer.prepare();
+        mediaPlayer.prepare()
         mediaPlayer.seekTo(progress)
-        mediaPlayer.start();
+        mediaPlayer.start()
     }
 
+    private fun playDownload(audioPath:String, progress: Int) {
+        val filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PODCASTS).toString() +'/'+audioPath
+        file = File(filePath)
+        fos = FileInputStream(file)
+        // remember th 'fos' reference somewhere for later closing it
+        // remember th 'fos' reference somewhere for later closing it
+        mediaPlayer.reset()
+        mediaPlayer.setDataSource(fos!!.fd)
+        mediaPlayer.prepare()
+        mediaPlayer.seekTo(progress)
+        mediaPlayer.start()
+    }
     // Coroutine that modifies seekbar
     private suspend fun displayTime(misc: Long, seekBar: SeekBar) {
         // While the coroutine is running and has not been canceled by its parent
         while (true) {
-            if (!userModifyingSeekBar.get()) seekBar.progress = mediaPlayer.currentPosition / 1000;
+            if (!userModifyingSeekBar.get()) seekBar.progress = mediaPlayer.currentPosition / 1000
             if (seekBar.progress == seekBar.max) {
-                paused = true;
-                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp));
-            };
+                paused = true
+                binding.imageButton.setImageDrawable(getDrawable(R.drawable.ic_play_arrow_black_24dp))
+            }
             delay(misc)
         }
     }

@@ -18,7 +18,7 @@ import java.time.format.DateTimeFormatter
 class EpisodeRowAdapter(private val viewModel: MainViewModel, private val context: Context)
     : ListAdapter<EpisodeDao.Episode, EpisodeRowAdapter.VH>(PodcastDiff()) {
 
-    private lateinit var podcastName: String;
+    private lateinit var podcastName: String
 
     class PodcastDiff : DiffUtil.ItemCallback<EpisodeDao.Episode>() {
         override fun areItemsTheSame(oldItem: EpisodeDao.Episode, newItem: EpisodeDao.Episode): Boolean {
@@ -63,6 +63,9 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel, private val contex
             rowBinding.episodeTime.setTextColor(Color.WHITE)
             rowBinding.episodeDate.setTextColor(Color.WHITE)
         }
+
+        if(episode.downloaded) rowBinding.downloadImage.visibility = VISIBLE
+        else rowBinding.downloadImage.visibility = GONE
         if (episode.imageUrl != null){
             rowBinding.episodeImage.visibility = VISIBLE
             Glide.glideFetch(episode.imageUrl, episode.imageUrl, rowBinding.episodeImage)
@@ -82,16 +85,16 @@ class EpisodeRowAdapter(private val viewModel: MainViewModel, private val contex
         // Play when clicked on
         rowBinding.root.setOnClickListener {
             viewModel.setStarted(episode.id,true)
-            viewModel.setCurrPlaying(episode);
+            viewModel.setCurrPlaying(episode)
         }
-        rowBinding.root.setOnLongClickListener(){
+        rowBinding.root.setOnLongClickListener {
             viewModel.showBottomDialogProfile(context,episode,rowBinding)
         }
 
     }
 
     fun setPodcastName (name: String) {
-        podcastName = name;
+        podcastName = name
     }
 
     private fun parseDate(pubDate: String?):String{

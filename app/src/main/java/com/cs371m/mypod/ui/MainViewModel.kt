@@ -61,7 +61,7 @@ class MainViewModel(
     private val profileEpisodes = MutableLiveData<List<EpisodeDao.Episode>>()
 
     // Media Player Stuff
-    private val currPlaying = MutableLiveData<EpisodeDao.Episode>();
+    private val currPlaying = MutableLiveData<EpisodeDao.Episode>()
     private var downloadFunc: ((EpisodeDao.Episode) -> Unit)? = null
 
     fun getTop25() {
@@ -207,7 +207,7 @@ class MainViewModel(
     }
 
     fun observeCurrPlaying(): MutableLiveData<EpisodeDao.Episode> {
-        return currPlaying;
+        return currPlaying
     }
 
     // Weird Nav Controller Stuff
@@ -281,11 +281,67 @@ class MainViewModel(
            originalEp.episodeNumber,
            started,
            originalEp.progress,
-           originalEp.played
+           originalEp.played,
+           originalEp.downloadId,
+           originalEp.audioPath,
+           originalEp.downloaded
        )
        myPodDbRepo.updateEpisode(newEp)
 
    }
+
+    fun setDownloaded(id:Int,downloaded:Boolean) = viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO
+    ) {
+        val originalEp = myPodDbRepo.getEpisodeByDownloadId(id)
+        if(originalEp != null) {
+            val newEp = EpisodeDao.Episode(
+                originalEp.id,
+                originalEp.title,
+                originalEp.audioUrl,
+                originalEp.imageUrl!!,
+                originalEp.pubDate,
+                originalEp.duration,
+                originalEp.podcastId,
+                originalEp.podcastName,
+                originalEp.episodeNumber,
+                originalEp.started,
+                originalEp.progress,
+                originalEp.played,
+                originalEp.downloadId,
+                originalEp.audioPath,
+                downloaded
+            )
+            myPodDbRepo.updateEpisode(newEp)
+        }
+    }
+
+    fun setDownloadInfo(id:String,downloadID: Int, audioPath:String) = viewModelScope.launch(
+        context = viewModelScope.coroutineContext
+                + Dispatchers.IO
+    ) {
+        val originalEp = myPodDbRepo.getEpisodeById(id)
+        val newEp = EpisodeDao.Episode(
+            originalEp.id,
+            originalEp.title,
+            originalEp.audioUrl,
+            originalEp.imageUrl!!,
+            originalEp.pubDate,
+            originalEp.duration,
+            originalEp.podcastId,
+            originalEp.podcastName,
+            originalEp.episodeNumber,
+            originalEp.started,
+            originalEp.progress,
+            originalEp.played,
+            downloadID,
+            audioPath,
+            originalEp.downloaded
+        )
+        myPodDbRepo.updateEpisode(newEp)
+
+    }
 
     fun setPlayed(id:String,played:Boolean) = viewModelScope.launch(
         context = viewModelScope.coroutineContext
@@ -303,8 +359,11 @@ class MainViewModel(
             originalEp.podcastName,
             originalEp.episodeNumber,
             false,
-            originalEp.progress,
-            played
+            0,
+            played,
+            originalEp.downloadId,
+            originalEp.audioPath,
+            originalEp.downloaded
         )
         myPodDbRepo.updateEpisode(newEp)
 
@@ -327,14 +386,17 @@ class MainViewModel(
             originalEp.episodeNumber,
             originalEp.started,
             progress,
-            originalEp.played
+            originalEp.played,
+            originalEp.downloadId,
+            originalEp.audioPath,
+            originalEp.downloaded
         )
         myPodDbRepo.updateEpisode(newEp)
 
     }
 
     fun setCurrPlaying(episode: EpisodeDao.Episode) {
-        currPlaying.postValue(episode);
+        currPlaying.postValue(episode)
     }
 
     fun setDownloadFun(func: (EpisodeDao.Episode)->Unit){
@@ -346,38 +408,30 @@ class MainViewModel(
     + Dispatchers.IO
     ) {
 
-        myPodDbRepo.insertEpisodeDownload(EpisodeDao.EpisodeDownload(episode.id,downloadID,file,false))
+        setDownloadInfo(episode.id,downloadID, file)
     }
 
-    fun setDownloaded(downloadId:Int)= viewModelScope.launch(
-        context = viewModelScope.coroutineContext
-                + Dispatchers.IO
-    ) {
-        val download = myPodDbRepo.getEpisodeDownloadByDownloadId(downloadId)
-        if(download != null) myPodDbRepo.updateEpisodeDownload(EpisodeDao.EpisodeDownload(download.id,download.downloadId,download.audioPath,true))
-
-    }
 
     fun showBottomSheetDialog(context:Context, episode: EpisodeDao.Episode):Boolean {
         val bottomSheetDialog = BottomSheetDialog(context)
         bottomSheetDialog.setContentView(com.cs371m.mypod.R.layout.bottom_sheet)
         val play = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.playLinearLayout)
-        play?.setOnClickListener(){
-            setCurrPlaying(episode);
-            bottomSheetDialog.dismiss();
+        play?.setOnClickListener {
+            setCurrPlaying(episode)
+            bottomSheetDialog.dismiss()
         }
         val markPlayed = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.markLinearLayout)
-        markPlayed?.setOnClickListener(){
+        markPlayed?.setOnClickListener {
             setPlayed(episode.id, !episode.played)
-            bottomSheetDialog.dismiss();
+            bottomSheetDialog.dismiss()
         }
         val download = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.downloadLinearLayout)
-        download?.setOnClickListener(){
+        download?.setOnClickListener {
             downloadFunc?.let { it1 -> it1(episode) }
             bottomSheetDialog.dismiss()
         }
         val share = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.shareLinearLayout)
-        share?.setOnClickListener(){
+        share?.setOnClickListener {
             bottomSheetDialog.dismiss()
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
@@ -397,12 +451,12 @@ class MainViewModel(
         val bottomSheetDialog = BottomSheetDialog(context)
         bottomSheetDialog.setContentView(com.cs371m.mypod.R.layout.bottom_sheet)
         val play = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.playLinearLayout)
-        play?.setOnClickListener(){
-            setCurrPlaying(episode);
-            bottomSheetDialog.dismiss();
+        play?.setOnClickListener {
+            setCurrPlaying(episode)
+            bottomSheetDialog.dismiss()
         }
         val markPlayed = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.markLinearLayout)
-        markPlayed?.setOnClickListener(){
+        markPlayed?.setOnClickListener {
             setPlayed(episode.id, !episode.played)
             if(!episode.played){
                 rowBinding.episodeTitle.setTextColor(Color.GRAY)
@@ -414,16 +468,16 @@ class MainViewModel(
                 rowBinding.episodeTime.setTextColor(Color.WHITE)
                 rowBinding.episodeDate.setTextColor(Color.WHITE)
             }
-            bottomSheetDialog.dismiss();
+            bottomSheetDialog.dismiss()
 
         }
         val download = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.downloadLinearLayout)
-        download?.setOnClickListener(){
+        download?.setOnClickListener {
             downloadFunc?.let { it1 -> it1(episode) }
             bottomSheetDialog.dismiss()
         }
         val share = bottomSheetDialog.findViewById<LinearLayout>(com.cs371m.mypod.R.id.shareLinearLayout)
-        share?.setOnClickListener(){
+        share?.setOnClickListener {
             bottomSheetDialog.dismiss()
             val sendIntent: Intent = Intent().apply {
                 action = Intent.ACTION_SEND
