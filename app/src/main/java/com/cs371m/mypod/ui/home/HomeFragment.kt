@@ -47,7 +47,7 @@ class HomeFragment : Fragment() {
 
         newEpisodesAdapter = NewEpisodesAdapter(viewModel, this.requireContext())
         binding.newEpsList.adapter = newEpisodesAdapter
-        binding.newEpsList.layoutManager = GridLayoutManager(this.context, 4)
+        binding.newEpsList.layoutManager = GridLayoutManager(this.context, 3)
         registerForContextMenu(binding.continueList)
         registerForContextMenu(binding.newEpsList)
         // Subscription List Observers

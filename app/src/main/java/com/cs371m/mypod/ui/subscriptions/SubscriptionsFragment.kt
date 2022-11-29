@@ -35,7 +35,7 @@ class SubscriptionsFragment : Fragment() {
         // Set up adapter
         val subAdapter = SubscriptionsAdaper(viewModel)
         binding.subFragList.adapter = subAdapter
-        binding.subFragList.layoutManager = GridLayoutManager(this.context, 4)
+        binding.subFragList.layoutManager = GridLayoutManager(this.context, 3)
 
         // Subscription List Observers
         viewModel.observeSubscriptionList().observe(viewLifecycleOwner) {
